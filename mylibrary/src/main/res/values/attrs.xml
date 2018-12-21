@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 圆形进度条 -->
+    <declare-styleable name="MyCircleProgressView">
+        <attr name="antiAlias"/>
+        <attr name="mCirWidth"/>
+        <attr name="mCirColor"/>
+        <attr name="mBgCirWidth"/>
+        <attr name="mBgCirColor"/>
+        <attr name="animTime"/>
+        <attr name="value"/>
+        <attr name="maxvalue"/>
+        <attr name="startAngle"/>
+        <attr name="sweepAngle"/>
+        <attr name="valueSize"/>
+        <attr name="valueColor"/>
+        <attr name="unit"/>
+        <attr name="unitSize"/>
+        <attr name="unitColor"/>
+        <attr name="hint"/>
+        <attr name="hintSize"/>
+        <attr name="hintColor"/>
+        <attr name="gradient"/>
+        <attr name="isGradient"/>
+        <attr name="smallCirEnable"/>
+        <attr name="smallCirColor"/>
+        <attr name="smallCirWidth"/>
+        <attr name="shadowSize"/>
+        <attr name="shadowColor"/>
+        <attr name="shadowShow"/>
+        <attr name="digit"/>
+        <attr name="isanim"/>
+    </declare-styleable>
+
+    <!--扇形图-->
+    <declare-styleable name="MyPieChartView">
+        <attr name="piechartWidth"/>
+        <attr name="dataSize"/>
+        <attr name="dataColor"/>
+        <attr name="numSize"/>
+        <attr name="numColor"/>
+        <attr name="layoutType"/>
+        <attr name="verticalMargin"/>
+        <attr name="horiMargin"/>
+        <attr name="animTime"/>
+        <attr name="pointingColor"/>
+        <attr name="pointingWidth"/>
+    </declare-styleable>
+
+    <!--柱状图-->
+    <declare-styleable name="MyBarChartView">
+        <attr name="barWidth"/>
+        <attr name="bg"/>
+        <attr name="yUnit"/>
+        <attr name="mSegment"/>
+        <attr name="mDigit"/>
+        <attr name="barColor"/>
+        <attr name="isAnim"/>
+        <attr name="animTime"/>
+        <attr name="isShowTopNum"/>
+        <attr name="isShowGridLine"/>
+    </declare-styleable>
+
+
+</resources>
