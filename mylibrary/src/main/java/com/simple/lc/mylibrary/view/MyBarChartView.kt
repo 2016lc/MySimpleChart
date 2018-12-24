@@ -43,7 +43,7 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
     private var leftSpaceRect: RectF? = null
     private var rightSpaceRect: RectF? = null
     private var mBg: Int? = null//背景颜色
-    private var canScorllSpace: Float = 0f
+    private var canScrollSpace: Float = 0f
     private var mExtraSpace: Float = 0f
     private var yUnit: String? = null
     private var mDigit: Int? = null
@@ -286,7 +286,7 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
 
 
         //保证向左滑动时有一屏的显示，不会全部滑出屏幕外
-        canScorllSpace = mTextMargin!! *
+        canScrollSpace = mTextMargin!! *
                 mData.size + mExtraSpace -
                 (mWidth!! - 3 * mMargin!! - Util.dip2px(
                     context,
@@ -388,8 +388,8 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
             leftMoving = 0f
         }
 
-        if (leftMoving > canScorllSpace) {
-            leftMoving = canScorllSpace
+        if (leftMoving > canScrollSpace) {
+            leftMoving = canScrollSpace
         }
     }
 
