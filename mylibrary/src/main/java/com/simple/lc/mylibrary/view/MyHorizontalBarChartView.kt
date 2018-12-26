@@ -5,6 +5,7 @@ import android.content.Context
 import android.graphics.*
 import android.text.TextPaint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import com.simple.lc.mylibrary.BarChartConstant
@@ -16,9 +17,9 @@ import java.util.*
 /**
  * Author:LC
  * Date:2018/12/4
- * Description:This is 柱状图
+ * Description:This is 横向柱状图
  */
-class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
+class MyHorizontalBarChartView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
     private var mPaint_xy: Paint? = null//x y轴
     private var mPaint_line: Paint? = null//网格线
@@ -36,7 +37,7 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
     private var mBarWidth: Float? = null//柱子的宽度
     private var mData: MutableList<BarChartData> = ArrayList()
     private var mRectF: RectF? = null
-    private var leftMoving: Float = 0f
+    private var topMoving: Float = 0f
     private var lastPointX: Float = 0f
     private var movingLeftThisTime = 0f
     private var lineStartX: Float = 0f
@@ -54,6 +55,8 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
     private var animTime: Int? = null
     private var isShowTopNum: Boolean? = null//是否显示柱子顶端数字
     private var isShowGridLine: Boolean? = null//是否显示网格线
+    private var textHeight: Float = 0f
+    private var mTextMaxWidth: Float = 0f
 
     init {
         mMargin = Util.dip2px(context!!, 8f)
@@ -156,26 +159,27 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
             return
         }
         mTextMargin = Util.dip2px(context, 40f) + mBarWidth!!.toInt()
+        textHeight = mPaint_text!!.descent() - mPaint_text!!.ascent()
 
-        val lastValueWidth= mPaint_text!!.measureText(mData[mData.size-1].value.toString())
-        val lastNameWidth =  mPaint_text!!.measureText(mData[mData.size-1].name.toString())
-        val max = Math.max(lastValueWidth,lastNameWidth)
+        val lastValueWidth = mPaint_text!!.measureText(mData[mData.size - 1].value.toString())
+        val lastNameWidth = mPaint_text!!.measureText(mData[mData.size - 1].name.toString())
+        val max = Math.max(lastValueWidth, lastNameWidth)
 
-        //向左偏移量
+        //向上偏移量
         mExtraSpace = if (mBarWidth!! >= max) {
             0f
         } else {
             (max - mBarWidth!!) / 2
         }
 
-        //如果说按照设置的间距无法铺满x轴，那么就将数据平分（数据很少的情况）
-        if (mWidth!! - mPaint_text!!.measureText(mMaxValue.toString()) - 3 * mMargin!! - Util.dip2px(
+        //如果说按照设置的间距无法铺满y轴，那么就将数据平分（数据很少的情况）
+        if (mHeight!! - textHeight - 3 * mMargin!! - Util.dip2px(
                 context,
                 5f
             ) > mTextMargin!! * mData.size
         ) {
 
-            val margin = (mWidth!! - mPaint_text!!.measureText(mMaxValue.toString()) - 3 * mMargin!! - Util.dip2px(
+            val margin = (mWidth!! - textHeight - 3 * mMargin!! - Util.dip2px(
                 context,
                 5f
             ) - mExtraSpace) / mData.size
@@ -183,57 +187,46 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
             mTextMargin = margin.toInt()
         }
 
-        //y轴
+        //x轴
         if (mMaxValue!! < mSegment) {
             mMaxValue = mSegment
         }
 
-        //y轴的每一个数字
+        //x轴的每一个数字
         val itemValue = Math.ceil(mMaxValue!! / mSegment.toDouble()).toInt()
-        val itemHeight = (mHeight!! - 3 * mMargin!! - Util.dip2px(
+        val itemWidth = (mWidth!! - 3 * mMargin!! - Util.dip2px(
             context,
-            15f
-        ) - (mPaint_text!!.descent() - mPaint_text!!.ascent())) / mSegment //（ 总高度 - 上面一个margin - 下面连个margin - 距离上面的高度 - x轴字体的高度 ）/分成的段数
+            25f
+        ) - mTextMaxWidth) / mSegment
 
 
-        lineStartX = mPaint_text!!.measureText(mMaxValue.toString()) + mPaint_text!!.measureText(yUnit) + 2 * mMargin!!
-        val lineStartY = mMargin!! + Util.dip2px(
+        lineStartX = mTextMaxWidth + 2 * mMargin!!
+
+        val realWidth = mWidth!! - 3 * mMargin!! - mTextMaxWidth!! - Util.dip2px(
             context,
-            15f
+            25f
         )
-        val lineStopX = lineStartX + Util.dip2px(context, 8f)
 
-
-        val textX = mMargin!!.toFloat() + mPaint_text!!.measureText(mMaxValue.toString())  // y轴字的x坐标
-        val textY = lineStartY + (mPaint_text!!.descent() - mPaint_text!!.ascent()) / 4 //y轴字的y坐标
-
-
-        val realHeight =
-            (mHeight!! - 3 * mMargin!! - Util.dip2px(
-                context,
-                15f
-            ) - (mPaint_text!!.descent() - mPaint_text!!.ascent()))
-
-        val bottom = mHeight!!.toFloat() - 2 * mMargin!! - (mPaint_text!!.descent() - mPaint_text!!.ascent())
+        val bottom = mHeight!!.toFloat() - 2 * mMargin!! - textHeight
 
 
         if (isShowGridLine!!) {
             for (i in 0 until mSegment) {
                 //网格线头
                 canvas!!.drawLine(
-                    lineStartX,
-                    lineStartY + itemHeight * i,
-                    lineStopX,
-                    lineStartY + itemHeight * i,
+                    lineStartX + itemWidth * (i + 1),
+                    mHeight!! - 2 * mMargin!! - textHeight,
+                    lineStartX + itemWidth * (i + 1),
+                    mHeight!! - 2 * mMargin!! - textHeight - Util.dip2px(context, 8f),
                     mPaint_xy!!
                 )
 
                 //网格线
                 canvas.drawLine(
-                    lineStartX + Util.dip2px(context, 8f),
-                    lineStartY + itemHeight * i,
-                    mWidth!!.toFloat() - mMargin!!,
-                    lineStartY + itemHeight * i,
+                    lineStartX + itemWidth * (i + 1),
+                    mHeight!! - 2 * mMargin!! - textHeight - Util.dip2px(context, 8f),
+                    lineStartX + itemWidth * (i + 1),
+                    mMargin!! + Util.dip2px(context, 5f).toFloat(),
                     mPaint_line!!
                 )
             }
@@ -241,21 +234,21 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
 
         for (i in 0 until mData.size) {
             //画柱
-            mRectF!!.right = lineStartX + mTextMargin!! * (i + 1) - leftMoving
-
-            mRectF!!.left = mRectF!!.right - mBarWidth!!
-
-            mRectF!!.bottom = bottom
-
-            mRectF!!.top = mRectF!!.bottom - mData[i].value!! / (itemValue * mSegment).toFloat() * realHeight * mPercent
+            mRectF!!.bottom = mTextMargin!! * i - topMoving + mMargin!! + Util.dip2px(
+                context,
+                15f
+            ) + mBarWidth!!
+            mRectF!!.top = mRectF!!.bottom - mBarWidth!!
+            mRectF!!.left = lineStartX
+            mRectF!!.right = lineStartX + mData[i].value!! / (itemValue * mSegment).toFloat() * realWidth * mPercent
 
             canvas!!.drawRect(mRectF!!, mPaint_bar!!)
 
             //画字
             canvas.drawText(
                 mData[i].name!!,
-                mRectF!!.right + mPaint_text!!.measureText(mData[i].name.toString()) / 2 - mBarWidth!! / 2,
-                mHeight!!.toFloat() - mMargin!!,
+                mMargin!! + mTextMaxWidth,
+                mRectF!!.bottom - (mBarWidth!! - textHeight * 2 / 3) / 2,
                 mPaint_text!!
             )
 
@@ -263,13 +256,11 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
             if (isShowTopNum!!) {
                 canvas.drawText(
                     Util.roundByScale(mData[i].value!!.toDouble() * mPercent, mDigit!!),
-                    mRectF!!.right + mPaint_text!!.measureText(
-                        Util.roundByScale(
-                            mData[i].value!!.toDouble() * mPercent,
-                            mDigit!!
-                        )
-                    ) / 2 - mBarWidth!! / 2,
-                    mRectF!!.top - Util.dp2px(context, 5f),
+                    mRectF!!.right - Util.dip2px(
+                        context,
+                        5f
+                    ) + mPaint_text!!.measureText(mData[i].value.toString()),
+                    mRectF!!.bottom - (mBarWidth!! - textHeight * 2 / 3) / 2,
                     mPaint_text!!
                 )
             }
@@ -279,38 +270,38 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
         //用于遮挡左右的间距，不然得滑出屏幕过后才消失（待优化）
         leftSpaceRect!!.left = 0f
         leftSpaceRect!!.top = 0f
-        leftSpaceRect!!.right = lineStartX
-        leftSpaceRect!!.bottom = mHeight!!.toFloat()
+        leftSpaceRect!!.right = mWidth!!.toFloat()
+        leftSpaceRect!!.bottom = mMargin!!.toFloat()
         canvas!!.drawRect(leftSpaceRect!!, mSpacePaint!!)
-        rightSpaceRect!!.left = mWidth!!.toFloat() - mMargin!! - Util.dip2px(context, 5f)
-        rightSpaceRect!!.top = 0f
+        rightSpaceRect!!.left = 0f
+        rightSpaceRect!!.top = mHeight!!.toFloat() - 2 * mMargin!! - textHeight
         rightSpaceRect!!.right = mWidth!!.toFloat()
         rightSpaceRect!!.bottom = mHeight!!.toFloat()
         canvas.drawRect(rightSpaceRect!!, mSpacePaint!!)
 
 
-        //保证向左滑动时有一屏的显示，不会全部滑出屏幕外
+        //保证向上滑动时有一屏的显示，不会全部滑出屏幕外
         canScrollSpace = mTextMargin!! *
                 mData.size + mExtraSpace -
-                (mWidth!! - 3 * mMargin!! - Util.dip2px(
+                (mHeight!! - 3 * mMargin!! - Util.dip2px(
                     context,
                     5f
-                ) - mPaint_text!!.measureText(mMaxValue.toString()))
+                ) - textHeight)
 
 
         for (i in 0 until mSegment) {
-            //y轴数字
+            //x轴数字
             canvas.drawText(
-                ((mSegment - i) * itemValue).toString(),
-                textX,
-                textY + itemHeight * i,
+                ((i + 1) * itemValue).toString(),
+                2 * mMargin!! + mTextMaxWidth + (i + 1) * itemWidth + mPaint_text!!.measureText(((i + 1) * itemValue).toString()) / 2 -  mPaint_text!!.measureText(yUnit)/2,
+                mHeight!! - mMargin!!.toFloat(),
                 mPaint_text!!
             )
-            //y轴单位
+            //x轴单位
             canvas.drawText(
                 yUnit,
-                textX + mPaint_text!!.measureText(yUnit),
-                textY + itemHeight * i,
+                2 * mMargin!! + mTextMaxWidth + (i + 1) * itemWidth + mPaint_text!!.measureText(((i + 1) * itemValue).toString()) / 2 +  mPaint_text!!.measureText(yUnit)/2,
+                mHeight!! - mMargin!!.toFloat(),
                 mPaint_text!!
             )
         }
@@ -331,14 +322,14 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
         val type = event.action
 
         when (type) {
-            MotionEvent.ACTION_DOWN -> lastPointX = event.rawX
+            MotionEvent.ACTION_DOWN -> lastPointX = event.rawY
 
             MotionEvent.ACTION_MOVE -> {
-                val x = event.rawX
-                movingLeftThisTime = lastPointX - x
+                val y = event.rawY
+                movingLeftThisTime = lastPointX - y
 
-                leftMoving += movingLeftThisTime
-                lastPointX = x
+                topMoving += movingLeftThisTime
+                lastPointX = y
 
                 invalidate()
             }
@@ -365,7 +356,7 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
             while (scrolling) {
                 val start = System.currentTimeMillis()
                 lastMoving = (0.9f * lastMoving).toInt().toFloat()
-                leftMoving += lastMoving
+                topMoving += lastMoving
 
                 checkLeftMoving()
                 postInvalidate()
@@ -388,12 +379,12 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
     }
 
     private fun checkLeftMoving() {
-        if (leftMoving < 0) {
-            leftMoving = 0f
+        if (topMoving < 0) {
+            topMoving = 0f
         }
 
-        if (leftMoving > canScrollSpace) {
-            leftMoving = canScrollSpace
+        if (topMoving > canScrollSpace) {
+            topMoving = canScrollSpace
         }
     }
 
@@ -402,7 +393,7 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
      * 画x y轴
      * */
     private fun drawXy(canvas: Canvas?) {
-        val stopY = mHeight!!.toFloat() - 2 * mMargin!! - (mPaint_text!!.descent() - mPaint_text!!.ascent())
+        val stopY = mHeight!!.toFloat() - 2 * mMargin!! - textHeight
         //x轴
         canvas!!.drawLine(
             lineStartX,
@@ -432,14 +423,14 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
             mHeight!!.toFloat() - 2 * mMargin!! - Util.dip2px(
                 context,
                 3f
-            ) - (mPaint_text!!.descent() - mPaint_text!!.ascent())
+            ) - textHeight
         )
         path.lineTo(
             mWidth!!.toFloat() - mMargin!! - Util.dip2px(context, 5f),
             mHeight!!.toFloat() - 2 * mMargin!! + Util.dip2px(
                 context,
                 3f
-            ) - (mPaint_text!!.descent() - mPaint_text!!.ascent())
+            ) - textHeight
         )
         canvas.drawPath(path, mPaint_xy!!)
         //画y轴三角形
@@ -465,9 +456,13 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
         }
         mData.addAll(mDatas)
         mMaxValue = Math.ceil(mData[0].value!!.toDouble()).toInt()
+        mTextMaxWidth = mPaint_text!!.measureText(mDatas[0].name)
         for (i in 0 until mData.size) {
             if (Math.ceil(mData[i].value!!.toDouble()).toInt() > mMaxValue!!) {
                 mMaxValue = Math.ceil(mData[i].value!!.toDouble()).toInt()
+            }
+            if (mPaint_text!!.measureText(mDatas[i].name) > mTextMaxWidth) {
+                mTextMaxWidth = mPaint_text!!.measureText(mDatas[i].name)
             }
         }
 

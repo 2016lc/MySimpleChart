@@ -7,18 +7,15 @@ import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.MotionEvent
 import android.view.View
-import com.simple.lc.mylibrary.BarChartConstant
-import com.simple.lc.mylibrary.BarChartData
-import com.simple.lc.mylibrary.R
-import com.simple.lc.mylibrary.Util
+import com.simple.lc.mylibrary.*
 import java.util.*
 
 /**
  * Author:LC
  * Date:2018/12/4
- * Description:This is 柱状图
+ * Description:This is 双柱状图
  */
-class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
+class MyDoubleBarChartView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
     private var mPaint_xy: Paint? = null//x y轴
     private var mPaint_line: Paint? = null//网格线
@@ -34,7 +31,7 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
     private var mMaxValue: Int? = null//集合最大值，用于y轴取值分段
     private var mSegment: Int = BarChartConstant.DEFAULT_SEGMENT//y轴分为几段
     private var mBarWidth: Float? = null//柱子的宽度
-    private var mData: MutableList<BarChartData> = ArrayList()
+    private var mData: MutableList<DoubleBarChartData> = ArrayList()
     private var mRectF: RectF? = null
     private var leftMoving: Float = 0f
     private var lastPointX: Float = 0f
@@ -48,12 +45,15 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
     private var yUnit: String? = null
     private var mDigit: Int? = null
     private var mBarColor: Int? = null
+    private var mOneBarColor: Int? = null
+    private var mTwoBarColor: Int? = null
     private var mAnimator: ValueAnimator? = null//属性动画
     private var mPercent: Float = 0f//动画进度
     private var isAnim: Boolean? = null//是否需要动画
     private var animTime: Int? = null
     private var isShowTopNum: Boolean? = null//是否显示柱子顶端数字
     private var isShowGridLine: Boolean? = null//是否显示网格线
+    private var barSpace: Float? = null//两个柱子之间的宽度
 
     init {
         mMargin = Util.dip2px(context!!, 8f)
@@ -76,6 +76,7 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
             R.styleable.MyBarChartView_barWidth,
             BarChartConstant.DEFAULT_BARWIDTH
         )
+        barSpace = typedArray.getDimension(R.styleable.MyBarChartView_barSpace, BarChartConstant.DEFAULT_BARSPACE)
         mBg = typedArray.getColor(R.styleable.MyBarChartView_bg, Color.WHITE)
         yUnit = typedArray.getString(R.styleable.MyBarChartView_yUnit)
         mSegment = typedArray.getInt(
@@ -87,6 +88,9 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
             BarChartConstant.DEFAULT_DIGIT
         )
         mBarColor = typedArray.getColor(R.styleable.MyBarChartView_barColor, Color.BLACK)
+        mOneBarColor = typedArray.getColor(R.styleable.MyBarChartView_oneBarColor, Color.BLACK)
+        mTwoBarColor = typedArray.getColor(R.styleable.MyBarChartView_twoBarColor, Color.BLACK)
+
         isAnim = typedArray.getBoolean(
             R.styleable.MyBarChartView_isAnim,
             BarChartConstant.DEFAULT_ISANIM
@@ -155,12 +159,12 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
         if (mData.size == 0) {
             return
         }
-        mTextMargin = Util.dip2px(context, 40f) + mBarWidth!!.toInt()
 
-        val lastValueWidth= mPaint_text!!.measureText(mData[mData.size-1].value.toString())
-        val lastNameWidth =  mPaint_text!!.measureText(mData[mData.size-1].name.toString())
-        val max = Math.max(lastValueWidth,lastNameWidth)
+        mTextMargin = Util.dip2px(context, 40f) + 2 * mBarWidth!!.toInt() + barSpace!!.toInt()
 
+        val lastValueWidth = mPaint_text!!.measureText(mData[mData.size - 1].valueTwo.toString())
+        val lastNameWidth = mPaint_text!!.measureText(mData[mData.size - 1].nameTwo.toString())
+        val max = Math.max(lastValueWidth, lastNameWidth)
         //向左偏移量
         mExtraSpace = if (mBarWidth!! >= max) {
             0f
@@ -240,39 +244,28 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
         }
 
         for (i in 0 until mData.size) {
-            //画柱
-            mRectF!!.right = lineStartX + mTextMargin!! * (i + 1) - leftMoving
-
-            mRectF!!.left = mRectF!!.right - mBarWidth!!
-
-            mRectF!!.bottom = bottom
-
-            mRectF!!.top = mRectF!!.bottom - mData[i].value!! / (itemValue * mSegment).toFloat() * realHeight * mPercent
-
-            canvas!!.drawRect(mRectF!!, mPaint_bar!!)
-
-            //画字
-            canvas.drawText(
-                mData[i].name!!,
-                mRectF!!.right + mPaint_text!!.measureText(mData[i].name.toString()) / 2 - mBarWidth!! / 2,
-                mHeight!!.toFloat() - mMargin!!,
-                mPaint_text!!
+            //第二个柱子
+            drawableDetail(
+                mOneBarColor!!,
+                mTextMargin!! * (i + 1),
+                mData[i].nameTwo!!,
+                mData[i].valueTwo!!,
+                bottom,
+                itemValue,
+                realHeight,
+                canvas
             )
-
-            //柱子顶端画字
-            if (isShowTopNum!!) {
-                canvas.drawText(
-                    Util.roundByScale(mData[i].value!!.toDouble() * mPercent, mDigit!!),
-                    mRectF!!.right + mPaint_text!!.measureText(
-                        Util.roundByScale(
-                            mData[i].value!!.toDouble() * mPercent,
-                            mDigit!!
-                        )
-                    ) / 2 - mBarWidth!! / 2,
-                    mRectF!!.top - Util.dp2px(context, 5f),
-                    mPaint_text!!
-                )
-            }
+            //第一个柱子
+            drawableDetail(
+                mTwoBarColor!!,
+                (mTextMargin!! * (i + 1) - barSpace!! - mBarWidth!!).toInt(),
+                mData[i].nameOne!!,
+                mData[i].valueOne!!,
+                bottom,
+                itemValue,
+                realHeight,
+                canvas
+            )
         }
 
 
@@ -315,6 +308,52 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
             )
         }
 
+    }
+
+    private fun drawableDetail(
+        color: Int,
+        space: Int,
+        name: String,
+        value: Float,
+        bottom: Float,
+        itemValue: Int,
+        realHeight: Float,
+        canvas: Canvas?
+    ) {
+        mPaint_bar!!.color = color
+        mRectF!!.right = lineStartX + space - leftMoving
+
+        mRectF!!.left = mRectF!!.right - mBarWidth!!
+
+        mRectF!!.bottom = bottom
+
+        mRectF!!.top = mRectF!!.bottom - value / (itemValue * mSegment).toFloat() * realHeight *
+                mPercent
+
+        canvas!!.drawRect(mRectF!!, mPaint_bar!!)
+
+
+        canvas.drawText(
+            name,
+            mRectF!!.right + mPaint_text!!.measureText(name) / 2 - mBarWidth!! / 2,
+            mHeight!!.toFloat() - mMargin!!,
+            mPaint_text!!
+        )
+
+
+        if (isShowTopNum!!) {
+            canvas.drawText(
+                Util.roundByScale(value.toDouble() * mPercent, mDigit!!),
+                mRectF!!.right + mPaint_text!!.measureText(
+                    Util.roundByScale(
+                        value.toDouble() * mPercent,
+                        mDigit!!
+                    )
+                ) / 2 - mBarWidth!! / 2,
+                mRectF!!.top - Util.dp2px(context, 5f),
+                mPaint_text!!
+            )
+        }
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -459,15 +498,16 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
     /**
      * 设置数据
      * */
-    fun setData(mDatas: List<BarChartData>) {
+    fun setData(mDatas: List<DoubleBarChartData>) {
         if (mData.size > 0) {
             mData.clear()
         }
         mData.addAll(mDatas)
-        mMaxValue = Math.ceil(mData[0].value!!.toDouble()).toInt()
+
+        mMaxValue = Math.ceil(Math.max(mDatas[0].valueOne!!, mDatas[0].valueTwo!!).toDouble()).toInt()
         for (i in 0 until mData.size) {
-            if (Math.ceil(mData[i].value!!.toDouble()).toInt() > mMaxValue!!) {
-                mMaxValue = Math.ceil(mData[i].value!!.toDouble()).toInt()
+            if (Math.ceil(Math.max(mDatas[i].valueOne!!, mDatas[i].valueTwo!!).toDouble()).toInt() > mMaxValue!!) {
+                mMaxValue = Math.ceil(Math.max(mDatas[i].valueOne!!, mDatas[i].valueTwo!!).toDouble()).toInt()
             }
         }
 

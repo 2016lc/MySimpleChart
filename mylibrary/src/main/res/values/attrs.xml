@@ -59,6 +59,9 @@
         <attr name="animTime"/>
         <attr name="isShowTopNum"/>
         <attr name="isShowGridLine"/>
+        <attr name="oneBarColor"/>
+        <attr name="twoBarColor"/>
+        <attr name="barSpace"/>
     </declare-styleable>
 
 
