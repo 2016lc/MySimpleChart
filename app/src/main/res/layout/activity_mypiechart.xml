@@ -4,17 +4,16 @@
               android:layout_width="match_parent" android:layout_height="match_parent"
               android:gravity="center"
 >
-
+    <!-- app:layoutType="pointingInstructions"-->
     <com.simple.lc.mylibrary.view.MyPieChartView
             android:id="@+id/piechart"
             android:layout_width="300dp"
             android:layout_height="300dp"
-            app:horiMargin="20dp"
             app:dataColor="#333333"
             app:numColor="#333333"
-            app:verticalMargin="40dp"
+            app:digit="0"
+            app:isHollow="true"
 
     />
-
 
 </LinearLayout>

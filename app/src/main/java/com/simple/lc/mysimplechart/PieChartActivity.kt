@@ -15,7 +15,8 @@ import kotlinx.android.synthetic.main.activity_mypiechart.*
 class PieChartActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_mypiechart)
+        setContentView(R.layout.
+            activity_mypiechart)
         val mList: List<PieChartData> = listOf(
             PieChartData(Color.parseColor("#0000FF"), "哈哈", 1f,"人"),
             PieChartData(Color.parseColor("#8A2BE2"), "嘻嘻", 2f,"人"),
@@ -26,6 +27,8 @@ class PieChartActivity : AppCompatActivity() {
             PieChartData(Color.parseColor("#D2691E"), "妹妹", 7f,"人")
         )
         piechart.setData(mList)
-        piechart.setType(PieChartType.PERCENT)
+        //piechart.setType(PieChartType.PERCENT)
+       // piechart.setType(PieChartType.NUM)
+        piechart.setType(PieChartType.CONTENT_NUM)
     }
 }

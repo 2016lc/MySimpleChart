@@ -18,7 +18,6 @@ import java.util.ArrayList
 class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
     private var mPieChartPaint: Paint? = null//画笔
-    private var mPieChartWidth: Float? = null
     //圆心位置
     private var centerPosition: Point? = null
     //半径
@@ -57,8 +56,13 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
 
     //指向说明
     private var mPointingPaint: Paint? = null
-    private var mPointingWidth: Float? = null
     private var mPointingColor: Int? = null
+    //小数点后面位数
+    private var mDigit: Int = 2
+    //是否空心
+    private var isHollow: Boolean? = null
+
+    var minWidth: Int? = 0
 
     init {
         mContext = context
@@ -76,10 +80,6 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
             attrs,
             R.styleable.MyPieChartView
         )
-        mPieChartWidth = typedArray.getDimension(
-            R.styleable.MyPieChartView_piechartWidth,
-            ChartConstant.PIE_DEFAULT_PIECHART_WIDTH
-        )
 
         mDataSize = typedArray.getDimension(R.styleable.MyPieChartView_dataSize, ChartConstant.PIE_DEFAULT_DATA_SIZE)
         mDataColor = typedArray.getColor(R.styleable.MyPieChartView_dataColor, Color.WHITE)
@@ -90,12 +90,11 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
 
         mAnimTime = typedArray.getInt(R.styleable.MyPieChartView_animTime, ChartConstant.PIE_DEFAULT_ANIM_TIME)
 
+        mDigit = typedArray.getInt(R.styleable.MyPieChartView_digit, ChartConstant.PIE_DEFAULT_DIGIT)
+
+        isHollow = typedArray.getBoolean(R.styleable.MyPieChartView_isHollow, ChartConstant.PIE_DEFAULT_ISHOLLOW)
 
         mPointingColor = typedArray.getColor(R.styleable.MyPieChartView_pointingColor, Color.GRAY)
-        mPointingWidth = typedArray.getDimension(
-            R.styleable.MyPieChartView_pointingWidth,
-            ChartConstant.PIE_DEFAULT_POINTING_WIDTH
-        )
 
         mLayoutType = typedArray.getString(R.styleable.MyPieChartView_layoutType)
         if (mLayoutType == null) {
@@ -110,10 +109,10 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
         mPieChartPaint!!.isAntiAlias = true//是否开启抗锯齿
         mPieChartPaint!!.isDither = true//防抖动
         mPieChartPaint!!.style =
-                Paint.Style.FILL//画笔样式  //STROKE 只绘制图形轮廓（描边） FILL 只绘制图形内容 FILL_AND_STROKE 既绘制轮廓也绘制内容
-        mPieChartPaint!!.strokeWidth = mPieChartWidth!!//画笔宽度
+                Paint.Style.FILL_AND_STROKE//画笔样式  //STROKE 只绘制图形轮廓（描边） FILL 只绘制图形内容 FILL_AND_STROKE 既绘制轮廓也绘制内容
+        // mPieChartPaint!!.strokeWidth = mPieChartWidth!!//画笔宽度
         /*mPieChartPaint!!.strokeCap =
-                Paint.Cap.SQUARE*///笔刷样式 //当画笔样式为STROKE或FILL_OR_STROKE时，设置笔刷的图形样式，如圆形样式Cap.ROUND,或方形样式Cap.SQUARE
+                Paint.Cap.ROUND*///笔刷样式 //当画笔样式为STROKE或FILL_OR_STROKE时，设置笔刷的图形样式，如圆形样式Cap.ROUND,或方形样式Cap.SQUARE
         //mPieChartPaint!!.color = Color.RED
 
         mDataPaint = TextPaint()
@@ -135,14 +134,13 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
         mPointingPaint!!.isAntiAlias = true//是否开启抗锯齿
         mPointingPaint!!.isDither = true//防抖动
         mPointingPaint!!.color = mPointingColor!!
-        mPointingPaint!!.strokeWidth = mPointingWidth!!
+        mPointingPaint!!.strokeWidth = Util.dip2px(context, 1f).toFloat()
 
 
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         super.onSizeChanged(w, h, oldw, oldh)
-        var minWidth: Int? = 0
         //圆心位置
         centerPosition!!.x = w / 2
         centerPosition!!.y = h / 2
@@ -163,16 +161,6 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
 
     }
 
-
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec)
-    }
-
-    override fun onLayout(changed: Boolean, left: Int, top: Int, right: Int, bottom: Int) {
-        super.onLayout(changed, left, top, right, bottom)
-
-    }
-
     override fun draw(canvas: Canvas?) {
         super.draw(canvas)
         drawPieChart(canvas)
@@ -182,20 +170,33 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
         canvas!!.save()
         mStartAngle = 0f
         mSweepAngle = 0f
+        var useCenter = true
+        if (isHollow!!) {
+            mPieChartPaint!!.strokeWidth = raduis!! * 2 / 3
+            useCenter = false
+            mRectF!!.left = centerPosition!!.x - raduis!! * 2 / 3
+            mRectF!!.top = centerPosition!!.y - raduis!! * 2 / 3
+            mRectF!!.right = centerPosition!!.x + raduis!! * 2 / 3
+            mRectF!!.bottom = centerPosition!!.y + raduis!! * 2 / 3
+        }
         for (i in 0 until mData!!.size) {
             mPieChartPaint!!.color = mData!![i].color!!
 
             mSweepAngle = (mData!![i].num!! / mTotalNum!!) * 360 * mPercent!!
 
             //画圆
-            canvas.drawArc(mRectF!!, mStartAngle!!, mSweepAngle!!, true, mPieChartPaint!!)
+            canvas.drawArc(mRectF!!, mStartAngle!!, mSweepAngle!!, useCenter, mPieChartPaint!!)
             mStartAngle = mStartAngle!! + mSweepAngle!!
+            val x = centerPosition!!.x + dataRaduis!! *
+                    Math.sin(Math.toRadians((90 + mStartAngle!! - mSweepAngle!! / 2).toDouble())).toFloat()
+            val y = centerPosition!!.y - dataRaduis!! *
+                    Math.cos(Math.toRadians((90 + mStartAngle!! - mSweepAngle!! / 2).toDouble())).toFloat()
             if (mLayoutType == "pointingInstructions") {
                 //指向说明
                 pointData(canvas, i)
             } else {
                 //画数据
-                drawData(canvas, i)
+                drawData(canvas, i, x, y)
             }
         }
         canvas.restore()
@@ -218,26 +219,17 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
         }
         canvas.drawLine(xP, yP, xEdP, yEdP, mPointingPaint!!)
         canvas.drawLine(xEdP, yEdP, xLast, yEdP, mPointingPaint!!)
-        canvas.drawText(mData!![i].name!!, xLast, yEdP, mDataPaint!!)
-        canvas.drawText(
-            mData!![i].num!!.toString() + mData!![i].unit,
-            xLast,
-            yEdP - mDataPaint!!.ascent() + 5,
-            mUnitPaint!!
-        )
+
+        drawData(canvas, i, xLast, yEdP)
     }
 
-    private fun drawData(canvas: Canvas, i: Int) {
-        val x = centerPosition!!.x + dataRaduis!! *
-                Math.sin(Math.toRadians((90 + mStartAngle!! - mSweepAngle!! / 2).toDouble())).toFloat()
-        val y = centerPosition!!.y - dataRaduis!! *
-                Math.cos(Math.toRadians((90 + mStartAngle!! - mSweepAngle!! / 2).toDouble())).toFloat()
+    private fun drawData(canvas: Canvas, i: Int, x: Float, y: Float) {
 
         when (mType) {
             PieChartType.CONTENT_NUM -> {
                 canvas.drawText(mData!![i].name!!, x, y, mDataPaint!!)
                 canvas.drawText(
-                    mData!![i].num!!.toString() + mData!![i].unit,
+                    Util.roundByScale(mData!![i].num!!.toDouble(), mDigit) + mData!![i].unit,
                     x,
                     y - mDataPaint!!.ascent() + 5,
                     mUnitPaint!!
@@ -246,7 +238,7 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
             PieChartType.CONTENT_PERCENT -> {
                 canvas.drawText(mData!![i].name!!, x, y, mDataPaint!!)
                 canvas.drawText(
-                    Util.roundByScale(mData!![i].num!!.toDouble() * 100 / mTotalNum!!.toDouble(), 2) + "%",
+                    Util.roundByScale(mData!![i].num!!.toDouble() * 100 / mTotalNum!!.toDouble(), mDigit) + "%",
                     x,
                     y - mDataPaint!!.ascent() + 5,
                     mUnitPaint!!
@@ -254,7 +246,7 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
             }
             PieChartType.NUM -> {
                 canvas.drawText(
-                    mData!![i].num!!.toString() + mData!![i].unit,
+                    Util.roundByScale(mData!![i].num!!.toDouble(), mDigit) + mData!![i].unit,
                     x,
                     y,
                     mUnitPaint!!
@@ -263,7 +255,7 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
             }
             PieChartType.PERCENT -> {
                 canvas.drawText(
-                    Util.roundByScale(mData!![i].num!!.toDouble() * 100 / mTotalNum!!.toDouble(), 2) + "%",
+                    Util.roundByScale(mData!![i].num!!.toDouble() * 100 / mTotalNum!!.toDouble(), mDigit) + "%",
                     x,
                     y,
                     mUnitPaint!!
@@ -310,8 +302,6 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
         invalidate()
         return this
     }
-
-
 
 }
 

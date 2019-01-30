@@ -12,6 +12,8 @@ class ChartConstant {
         val PIE_DEFAULT_UNIT_SIZE=20F
         val PIE_DEFAULT_ANIM_TIME=3000
         val PIE_DEFAULT_POINTING_WIDTH = 2F
+        val PIE_DEFAULT_DIGIT = 2
+        val PIE_DEFAULT_ISHOLLOW = false
 
         val BAR_DEFAULT_SEGMENT = 5
         val BAR_DEFAULT_BARWIDTH = 12F
