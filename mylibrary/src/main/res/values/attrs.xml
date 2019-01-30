@@ -64,5 +64,18 @@
         <attr name="barSpace"/>
     </declare-styleable>
 
+    <!--折线图-->
+    <declare-styleable name="MyLineChartView">
+        <attr name="lineWidth"/>
+        <attr name="mSegment"/>
+        <attr name="bg"/>
+        <attr name="yUnit"/>
+        <attr name="mDigit"/>
+        <attr name="lineColor"/>
+        <attr name="isAnim"/>
+        <attr name="animTime"/>
+        <attr name="circleColor"/>
+    </declare-styleable>
+
 
 </resources>

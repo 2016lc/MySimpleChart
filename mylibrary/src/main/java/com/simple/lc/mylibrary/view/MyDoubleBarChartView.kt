@@ -29,7 +29,7 @@ class MyDoubleBarChartView(context: Context?, attrs: AttributeSet?) : View(conte
     private var mMargin: Int? = null//间距
     private var mTextMargin: Int? = null//x轴字体间距
     private var mMaxValue: Int? = null//集合最大值，用于y轴取值分段
-    private var mSegment: Int = BarChartConstant.DEFAULT_SEGMENT//y轴分为几段
+    private var mSegment: Int = ChartConstant.BAR_DEFAULT_SEGMENT//y轴分为几段
     private var mBarWidth: Float? = null//柱子的宽度
     private var mData: MutableList<DoubleBarChartData> = ArrayList()
     private var mRectF: RectF? = null
@@ -74,18 +74,18 @@ class MyDoubleBarChartView(context: Context?, attrs: AttributeSet?) : View(conte
         )
         mBarWidth = typedArray.getDimension(
             R.styleable.MyBarChartView_barWidth,
-            BarChartConstant.DEFAULT_BARWIDTH
+            ChartConstant.BAR_DEFAULT_BARWIDTH
         )
-        barSpace = typedArray.getDimension(R.styleable.MyBarChartView_barSpace, BarChartConstant.DEFAULT_BARSPACE)
+        barSpace = typedArray.getDimension(R.styleable.MyBarChartView_barSpace, ChartConstant.BAR_DEFAULT_BARSPACE)
         mBg = typedArray.getColor(R.styleable.MyBarChartView_bg, Color.WHITE)
         yUnit = typedArray.getString(R.styleable.MyBarChartView_yUnit)
         mSegment = typedArray.getInt(
             R.styleable.MyBarChartView_mSegment,
-            BarChartConstant.DEFAULT_SEGMENT
+            ChartConstant.BAR_DEFAULT_SEGMENT
         )
         mDigit = typedArray.getInt(
             R.styleable.MyBarChartView_mDigit,
-            BarChartConstant.DEFAULT_DIGIT
+            ChartConstant.BAR_DEFAULT_DIGIT
         )
         mBarColor = typedArray.getColor(R.styleable.MyBarChartView_barColor, Color.BLACK)
         mOneBarColor = typedArray.getColor(R.styleable.MyBarChartView_oneBarColor, Color.BLACK)
@@ -93,20 +93,20 @@ class MyDoubleBarChartView(context: Context?, attrs: AttributeSet?) : View(conte
 
         isAnim = typedArray.getBoolean(
             R.styleable.MyBarChartView_isAnim,
-            BarChartConstant.DEFAULT_ISANIM
+            ChartConstant.BAR_DEFAULT_ISANIM
         )
         animTime = typedArray.getInt(
             R.styleable.MyBarChartView_animTime,
-            BarChartConstant.DEFAULT_ANIMTIME
+            ChartConstant.BAR_DEFAULT_ANIMTIME
         )
         isShowGridLine = typedArray.getBoolean(
             R.styleable.MyBarChartView_isShowGridLine,
-            BarChartConstant.DEFAULT_ISSHOWGRIDLINE
+            ChartConstant.BAR_DEFAULT_ISSHOWGRIDLINE
         )
         isShowTopNum =
                 typedArray.getBoolean(
                     R.styleable.MyBarChartView_isShowTopNum,
-                    BarChartConstant.DEFAULT_ISSHOWTOPNUM
+                    ChartConstant.BAR_DEFAULT_ISSHOWTOPNUM
                 )
 
         if (yUnit == null) {
@@ -163,7 +163,7 @@ class MyDoubleBarChartView(context: Context?, attrs: AttributeSet?) : View(conte
         mTextMargin = Util.dip2px(context, 40f) + 2 * mBarWidth!!.toInt() + barSpace!!.toInt()
 
         val lastValueWidth = mPaint_text!!.measureText(mData[mData.size - 1].valueTwo.toString())
-        val lastNameWidth = mPaint_text!!.measureText(mData[mData.size - 1].nameTwo.toString())
+        val lastNameWidth = mPaint_text!!.measureText(mData[mData.size - 1].name.toString())
         val max = Math.max(lastValueWidth, lastNameWidth)
         //向左偏移量
         mExtraSpace = if (mBarWidth!! >= max) {
@@ -201,6 +201,7 @@ class MyDoubleBarChartView(context: Context?, attrs: AttributeSet?) : View(conte
 
 
         lineStartX = mPaint_text!!.measureText(mMaxValue.toString()) + mPaint_text!!.measureText(yUnit) + 2 * mMargin!!
+
         val lineStartY = mMargin!! + Util.dip2px(
             context,
             15f
@@ -248,7 +249,6 @@ class MyDoubleBarChartView(context: Context?, attrs: AttributeSet?) : View(conte
             drawableDetail(
                 mOneBarColor!!,
                 mTextMargin!! * (i + 1),
-                mData[i].nameTwo!!,
                 mData[i].valueTwo!!,
                 bottom,
                 itemValue,
@@ -259,12 +259,21 @@ class MyDoubleBarChartView(context: Context?, attrs: AttributeSet?) : View(conte
             drawableDetail(
                 mTwoBarColor!!,
                 (mTextMargin!! * (i + 1) - barSpace!! - mBarWidth!!).toInt(),
-                mData[i].nameOne!!,
                 mData[i].valueOne!!,
                 bottom,
                 itemValue,
                 realHeight,
                 canvas
+            )
+
+
+            canvas!!.drawText(
+                mData[i].name!!,
+                lineStartX + mTextMargin!! * (i + 1) - mBarWidth!! - barSpace!! / 2 - leftMoving + mPaint_text!!.measureText(
+                    mData[i].name!!
+                ) / 2,
+                mHeight!!.toFloat() - mMargin!!,
+                mPaint_text!!
             )
         }
 
@@ -313,7 +322,6 @@ class MyDoubleBarChartView(context: Context?, attrs: AttributeSet?) : View(conte
     private fun drawableDetail(
         color: Int,
         space: Int,
-        name: String,
         value: Float,
         bottom: Float,
         itemValue: Int,
@@ -333,12 +341,6 @@ class MyDoubleBarChartView(context: Context?, attrs: AttributeSet?) : View(conte
         canvas!!.drawRect(mRectF!!, mPaint_bar!!)
 
 
-        canvas.drawText(
-            name,
-            mRectF!!.right + mPaint_text!!.measureText(name) / 2 - mBarWidth!! / 2,
-            mHeight!!.toFloat() - mMargin!!,
-            mPaint_text!!
-        )
 
 
         if (isShowTopNum!!) {

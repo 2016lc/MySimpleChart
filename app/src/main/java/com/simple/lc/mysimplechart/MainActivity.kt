@@ -3,8 +3,6 @@ package com.simple.lc.mysimplechart
 import android.content.Intent
 import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
-import com.simple.lc.mylibrary.BarChartData
-import com.simple.lc.mylibrary.DoubleBarChartData
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -27,6 +25,18 @@ class MainActivity : AppCompatActivity() {
         btn_horibarchart.setOnClickListener {
             run {
                 val intent = Intent(this, HoriBarChartActivity::class.java)
+                startActivity(intent)
+            }
+        }
+        btn_piechart.setOnClickListener {
+            run {
+                val intent = Intent(this, PieChartActivity::class.java)
+                startActivity(intent)
+            }
+        }
+        btn_linechart.setOnClickListener {
+            run {
+                val intent = Intent(this, LineChartActivity::class.java)
                 startActivity(intent)
             }
         }

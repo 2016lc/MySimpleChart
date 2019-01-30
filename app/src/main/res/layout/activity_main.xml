@@ -24,4 +24,17 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="HoriBarChart(横向柱状图)"/>
+
+    <Button
+            android:id="@+id/btn_piechart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="PieChart(扇形图)"/>
+
+    <Button
+            android:id="@+id/btn_linechart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="LineChart(折线图)"/>
+
 </LinearLayout>

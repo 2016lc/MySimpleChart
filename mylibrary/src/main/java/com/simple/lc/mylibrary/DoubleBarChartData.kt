@@ -7,14 +7,12 @@ package com.simple.lc.mylibrary
  */
 class DoubleBarChartData {
 
-    var nameOne: String? = null
-    var nameTwo: String? = null
+    var name: String? = null
     var valueOne: Float? = null
     var valueTwo: Float? = null
 
-    constructor(nameOne: String?, nameTwo: String?, valueOne: Float?,valueTwo: Float?) {
-        this.nameOne = nameOne
-        this.nameTwo = nameTwo
+    constructor(name: String?, valueOne: Float?,valueTwo: Float?) {
+        this.name = name
         this.valueOne = valueOne
         this.valueTwo = valueTwo
     }

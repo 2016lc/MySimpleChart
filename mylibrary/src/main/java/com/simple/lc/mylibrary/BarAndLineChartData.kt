@@ -5,7 +5,7 @@ package com.simple.lc.mylibrary
  * Date:2018/11/27
  * Description:This is 柱状图
  */
-class BarChartData {
+class BarAndLineChartData {
 
     var name: String? = null
     var value: Float? = null

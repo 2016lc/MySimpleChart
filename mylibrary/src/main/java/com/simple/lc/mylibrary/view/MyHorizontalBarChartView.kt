@@ -5,13 +5,9 @@ import android.content.Context
 import android.graphics.*
 import android.text.TextPaint
 import android.util.AttributeSet
-import android.util.Log
 import android.view.MotionEvent
 import android.view.View
-import com.simple.lc.mylibrary.BarChartConstant
-import com.simple.lc.mylibrary.BarChartData
-import com.simple.lc.mylibrary.R
-import com.simple.lc.mylibrary.Util
+import com.simple.lc.mylibrary.*
 import java.util.*
 
 /**
@@ -33,9 +29,9 @@ class MyHorizontalBarChartView(context: Context?, attrs: AttributeSet?) : View(c
     private var mMargin: Int? = null//间距
     private var mTextMargin: Int? = null//x轴字体间距
     private var mMaxValue: Int? = null//集合最大值，用于y轴取值分段
-    private var mSegment: Int = BarChartConstant.DEFAULT_SEGMENT//y轴分为几段
+    private var mSegment: Int = ChartConstant.BAR_DEFAULT_SEGMENT//y轴分为几段
     private var mBarWidth: Float? = null//柱子的宽度
-    private var mData: MutableList<BarChartData> = ArrayList()
+    private var mData: MutableList<BarAndLineChartData> = ArrayList()
     private var mRectF: RectF? = null
     private var topMoving: Float = 0f
     private var lastPointX: Float = 0f
@@ -77,35 +73,35 @@ class MyHorizontalBarChartView(context: Context?, attrs: AttributeSet?) : View(c
         )
         mBarWidth = typedArray.getDimension(
             R.styleable.MyBarChartView_barWidth,
-            BarChartConstant.DEFAULT_BARWIDTH
+            ChartConstant.BAR_DEFAULT_BARWIDTH
         )
         mBg = typedArray.getColor(R.styleable.MyBarChartView_bg, Color.WHITE)
         yUnit = typedArray.getString(R.styleable.MyBarChartView_yUnit)
         mSegment = typedArray.getInt(
             R.styleable.MyBarChartView_mSegment,
-            BarChartConstant.DEFAULT_SEGMENT
+            ChartConstant.BAR_DEFAULT_SEGMENT
         )
         mDigit = typedArray.getInt(
             R.styleable.MyBarChartView_mDigit,
-            BarChartConstant.DEFAULT_DIGIT
+            ChartConstant.BAR_DEFAULT_DIGIT
         )
         mBarColor = typedArray.getColor(R.styleable.MyBarChartView_barColor, Color.BLACK)
         isAnim = typedArray.getBoolean(
             R.styleable.MyBarChartView_isAnim,
-            BarChartConstant.DEFAULT_ISANIM
+            ChartConstant.BAR_DEFAULT_ISANIM
         )
         animTime = typedArray.getInt(
             R.styleable.MyBarChartView_animTime,
-            BarChartConstant.DEFAULT_ANIMTIME
+            ChartConstant.BAR_DEFAULT_ANIMTIME
         )
         isShowGridLine = typedArray.getBoolean(
             R.styleable.MyBarChartView_isShowGridLine,
-            BarChartConstant.DEFAULT_ISSHOWGRIDLINE
+            ChartConstant.BAR_DEFAULT_ISSHOWGRIDLINE
         )
         isShowTopNum =
                 typedArray.getBoolean(
                     R.styleable.MyBarChartView_isShowTopNum,
-                    BarChartConstant.DEFAULT_ISSHOWTOPNUM
+                    ChartConstant.BAR_DEFAULT_ISSHOWTOPNUM
                 )
 
         if (yUnit == null) {
@@ -179,7 +175,7 @@ class MyHorizontalBarChartView(context: Context?, attrs: AttributeSet?) : View(c
             ) > mTextMargin!! * mData.size
         ) {
 
-            val margin = (mWidth!! - textHeight - 3 * mMargin!! - Util.dip2px(
+            val margin = (mHeight!! - textHeight - 3 * mMargin!! - Util.dip2px(
                 context,
                 5f
             ) - mExtraSpace) / mData.size
@@ -279,6 +275,11 @@ class MyHorizontalBarChartView(context: Context?, attrs: AttributeSet?) : View(c
         rightSpaceRect!!.bottom = mHeight!!.toFloat()
         canvas.drawRect(rightSpaceRect!!, mSpacePaint!!)
 
+        /*
+        * mTextMargin!! * i - topMoving + mMargin!! + Util.dip2px(
+                context,
+                15f
+            ) + mBarWidth!!*/
 
         //保证向上滑动时有一屏的显示，不会全部滑出屏幕外
         canScrollSpace = mTextMargin!! *
@@ -450,7 +451,7 @@ class MyHorizontalBarChartView(context: Context?, attrs: AttributeSet?) : View(c
     /**
      * 设置数据
      * */
-    fun setData(mDatas: List<BarChartData>) {
+    fun setData(mDatas: List<BarAndLineChartData>) {
         if (mData.size > 0) {
             mData.clear()
         }

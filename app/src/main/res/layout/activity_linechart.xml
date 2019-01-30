@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <com.simple.lc.mylibrary.view.MyLineChartView
+            android:id="@+id/linechart"
+            android:layout_width="match_parent"
+            android:layout_height="400dp"
+            app:isShowGridLine="true"
+            app:lineColor="#54FF9F"
+            app:lineWidth="1dp"
+            app:circleColor="#000"
+
+     />
+
+</LinearLayout>
