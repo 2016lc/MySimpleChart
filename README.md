@@ -9,7 +9,7 @@ allprojects {
     }
 }
 ```
-再在dependencies中导入，V1.0.4是版本号，版本号可在releases中查看
+再在dependencies中导入，1.0.7是版本号，版本号可在releases中查看
 ```
-implementation 'com.github.2016lc:MySimpleChart:V1.0.4'
+implementation 'com.github.2016lc:MySimpleChart:1.0.7'
 ```
