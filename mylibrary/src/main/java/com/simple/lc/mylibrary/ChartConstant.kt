@@ -3,7 +3,7 @@ package com.simple.lc.mylibrary
 /**
  * Author:LC
  * Date:2018/11/27
- * Description:This is 图标默认值
+ * Description:This is 图表默认值
  */
 class ChartConstant {
     companion object {
@@ -29,5 +29,6 @@ class ChartConstant {
         val LINE_DEFAULT_DIGIT = 0
         val LINE_DEFAULT_ISANIM = true
         val LINE_DEFAULT_ANIMTIME = 3000
+        val LINE_DEFAULT_ISGRIDLINE = true
     }
 }

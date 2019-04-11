@@ -31,7 +31,7 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
     private var mMaxValue: Int? = null//集合最大值，用于y轴取值分段
     private var mSegment: Int = ChartConstant.BAR_DEFAULT_SEGMENT//y轴分为几段
     private var mBarWidth: Float? = null//柱子的宽度
-    private var mData: MutableList<BarAndLineChartData> = ArrayList()
+    private var mData: MutableList<BarChartData> = ArrayList()
     private var mRectF: RectF? = null
     private var leftMoving: Float = 0f
     private var lastPointX: Float = 0f
@@ -456,15 +456,15 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : View(context, at
     /**
      * 设置数据
      * */
-    fun setData(mDatas: List<BarAndLineChartData>) {
-        if (mData.size > 0) {
-            mData.clear()
+    fun setData(mData: List<BarChartData>) {
+        if (this.mData.size > 0) {
+            this.mData.clear()
         }
-        mData.addAll(mDatas)
-        mMaxValue = Math.ceil(mData[0].value!!.toDouble()).toInt()
-        for (i in 0 until mData.size) {
-            if (Math.ceil(mData[i].value!!.toDouble()).toInt() > mMaxValue!!) {
-                mMaxValue = Math.ceil(mData[i].value!!.toDouble()).toInt()
+        this.mData.addAll(mData)
+        mMaxValue = Math.ceil(this.mData[0].value!!.toDouble()).toInt()
+        for (i in 0 until this.mData.size) {
+            if (Math.ceil(this.mData[i].value!!.toDouble()).toInt() > mMaxValue!!) {
+                mMaxValue = Math.ceil(this.mData[i].value!!.toDouble()).toInt()
             }
         }
 

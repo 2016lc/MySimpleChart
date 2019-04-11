@@ -3,14 +3,17 @@ package com.simple.lc.mylibrary
 /**
  * Author:LC
  * Date:2018/11/27
- * Description:This is 柱状图
+ * Description:This is 折线图
  */
-class BarAndLineChartData {
+class LineChartData {
 
     var name: String? = null
     var value: Float? = null
-    constructor(name: String?, value: Float?) {
+    var color: Int? = null
+
+    constructor(name: String?, value: Float?, color: Int?) {
         this.name = name
         this.value = value
+        this.color = color
     }
 }

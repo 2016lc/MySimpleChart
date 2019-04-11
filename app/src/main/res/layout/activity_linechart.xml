@@ -9,7 +9,6 @@
             android:layout_width="match_parent"
             android:layout_height="400dp"
             app:isShowGridLine="true"
-            app:lineColor="#54FF9F"
             app:lineWidth="1dp"
             app:circleColor="#000"
 

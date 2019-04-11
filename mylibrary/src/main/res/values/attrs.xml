@@ -42,6 +42,7 @@
         <attr name="isAnim"/>
         <attr name="animTime"/>
         <attr name="circleColor"/>
+        <attr name="isShowGridLine"/>
     </declare-styleable>
 
 
