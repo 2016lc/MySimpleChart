@@ -13,7 +13,7 @@ import java.util.ArrayList
 /**
  * Author:LC
  * Date:2018/11/27
- * Description:This is 扇形图
+ * Description:扇形图
  */
 class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 

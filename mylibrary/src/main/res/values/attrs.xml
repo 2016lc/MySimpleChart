@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!--common-->
+    <declare-styleable name="MyCommonView">
+        <attr name="isShowUnit" format="boolean"/>
+        <attr name="xyLineColor" format="color"/>
+        <attr name="textColor" format="color"/>
+        <attr name="textSize" format="dimension"/>
+        <attr name="isAnim" format="boolean"/>
+        <attr name="isShowGridLine" format="boolean"/>
+        <attr name="animTime" format="integer"/>
+        <attr name="xSegment" format="integer"/>
+    </declare-styleable>
+
+
     <!--扇形图-->
     <declare-styleable name="MyPieChartView">
         <attr name="dataSize"/>
@@ -16,33 +29,21 @@
 
     <!--柱状图-->
     <declare-styleable name="MyBarChartView">
-        <attr name="barWidth"/>
-        <attr name="bg"/>
-        <attr name="yUnit"/>
-        <attr name="mSegment"/>
-        <attr name="mDigit"/>
-        <attr name="barColor"/>
-        <attr name="isAnim"/>
-        <attr name="animTime"/>
-        <attr name="isShowTopNum"/>
-        <attr name="isShowGridLine"/>
-        <attr name="oneBarColor"/>
-        <attr name="twoBarColor"/>
-        <attr name="barSpace"/>
+        <attr name="barColor" format="color"/>
+        <attr name="barWidth" format="dimension"/>
+        <attr name="barMargin" format="dimension"/>
+        <attr name="barIsShowTopNum" format="boolean"/>
+        <attr name="barIsDouble" format="boolean"/>
+
     </declare-styleable>
 
     <!--折线图-->
     <declare-styleable name="MyLineChartView">
-        <attr name="lineWidth"/>
-        <attr name="mSegment"/>
-        <attr name="bg"/>
-        <attr name="yUnit"/>
-        <attr name="mDigit"/>
-        <attr name="lineColor"/>
-        <attr name="isAnim"/>
-        <attr name="animTime"/>
-        <attr name="circleColor"/>
-        <attr name="isShowGridLine"/>
+        <attr name="lineWidth" format="dimension"/>
+        <attr name="lineColor" format="color"/>
+        <attr name="circleColor" format="color"/>
+        <attr name="iskinkedLine" format="boolean"/>
+        <attr name="isShowCircle" format="boolean"/>
     </declare-styleable>
 
 

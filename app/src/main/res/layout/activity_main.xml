@@ -13,11 +13,11 @@
             android:layout_height="wrap_content"
             android:text="BarChart(柱状图)"/>
 
-    <Button
+   <!-- <Button
             android:id="@+id/btn_doublebarchart"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="DoubleBarChart(双柱状图)"/>
+            android:text="DoubleBarChart(双柱状图)"/>-->
 
     <Button
             android:id="@+id/btn_horibarchart"

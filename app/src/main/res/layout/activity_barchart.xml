@@ -1,12 +1,26 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
               android:layout_width="match_parent"
-              android:layout_height="match_parent">
+              android:layout_height="match_parent"
+              android:orientation="vertical">
 
     <com.simple.lc.mylibrary.view.MyBarChartView
             android:id="@+id/barchart"
             android:layout_width="match_parent"
-            android:layout_height="400dp"
-     />
+            android:layout_height="300dp"
+            />
+
+    <Button
+            android:id="@+id/btn_isdouble"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="是否双列"/>
+
+    <Button
+            android:id="@+id/btn_color"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="bar颜色"/>
+
 
 </LinearLayout>

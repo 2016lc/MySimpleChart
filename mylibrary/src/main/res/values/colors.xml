@@ -19,6 +19,8 @@
     <color name="line_color">#eeeeee</color>
 
     <color name="default_bg">#ffffff</color>
+    <color name="explain_bg">#CCCCCC</color>
+
 
 
 </resources>

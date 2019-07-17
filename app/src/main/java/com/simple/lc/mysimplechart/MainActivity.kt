@@ -16,12 +16,12 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }
-        btn_doublebarchart.setOnClickListener {
+        /*btn_doublebarchart.setOnClickListener {
             run {
                 val intent = Intent(this, DoubleBarChartActivity::class.java)
                 startActivity(intent)
             }
-        }
+        }*/
         btn_horibarchart.setOnClickListener {
             run {
                 val intent = Intent(this, HoriBarChartActivity::class.java)

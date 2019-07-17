@@ -23,7 +23,7 @@ class Util {
             if (scale < 0) {
                 throw  IllegalArgumentException(
                     "The   scale   must   be   a   positive   integer   or   zero"
-                )
+                ) as Throwable
             }
             if (scale == 0) {
                 return DecimalFormat("0").format(v)

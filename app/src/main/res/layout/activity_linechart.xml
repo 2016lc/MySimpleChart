@@ -1,17 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
               android:layout_width="match_parent"
               android:layout_height="match_parent"
-              xmlns:app="http://schemas.android.com/apk/res-auto">
+              android:orientation="vertical">
 
     <com.simple.lc.mylibrary.view.MyLineChartView
             android:id="@+id/linechart"
             android:layout_width="match_parent"
             android:layout_height="400dp"
             app:isShowGridLine="true"
-            app:lineWidth="1dp"
-            app:circleColor="#000"
+            app:isShowCircle="false"
+            app:isAnim="true"
+            />
 
-     />
+    <Button
+            android:id="@+id/btn_isAnim"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="是否需要动画"/>
 
 </LinearLayout>

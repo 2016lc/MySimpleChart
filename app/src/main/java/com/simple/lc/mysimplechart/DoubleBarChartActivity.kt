@@ -36,6 +36,6 @@ class DoubleBarChartActivity : Activity() {
             DoubleBarChartData("hah",  94.36f, 19f),
             DoubleBarChartData("hah",  22.36f, 99f)
         )
-        barchart.setData(mList)
+        //barchart.setData(mList)
     }
 }

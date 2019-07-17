@@ -3,7 +3,7 @@ package com.simple.lc.mylibrary
 /**
  * Author:LC
  * Date:2018/11/27
- * Description:This is 柱状图
+ * Description:柱状图
  */
 class DoubleBarChartData {
 

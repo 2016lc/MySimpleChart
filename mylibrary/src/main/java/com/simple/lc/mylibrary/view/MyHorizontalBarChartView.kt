@@ -13,7 +13,7 @@ import java.util.*
 /**
  * Author:LC
  * Date:2018/12/4
- * Description:This is 横向柱状图
+ * Description:横向柱状图
  */
 class MyHorizontalBarChartView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
 
@@ -29,7 +29,7 @@ class MyHorizontalBarChartView(context: Context?, attrs: AttributeSet?) : View(c
     private var mMargin: Int? = null//间距
     private var mTextMargin: Int? = null//x轴字体间距
     private var mMaxValue: Int? = null//集合最大值，用于y轴取值分段
-    private var mSegment: Int = ChartConstant.BAR_DEFAULT_SEGMENT//y轴分为几段
+    private var mSegment: Int = 5//y轴分为几段
     private var mBarWidth: Float? = null//柱子的宽度
     private var mData: MutableList<BarChartData> = ArrayList()
     private var mRectF: RectF? = null
@@ -71,28 +71,28 @@ class MyHorizontalBarChartView(context: Context?, attrs: AttributeSet?) : View(c
             attrs,
             R.styleable.MyBarChartView
         )
-        mBarWidth = typedArray.getDimension(
+       /* mBarWidth = typedArray.getDimension(
             R.styleable.MyBarChartView_barWidth,
             ChartConstant.BAR_DEFAULT_BARWIDTH
-        )
-        mBg = typedArray.getColor(R.styleable.MyBarChartView_bg, Color.WHITE)
+        )*/
+        /*mBg = typedArray.getColor(R.styleable.MyBarChartView_bg, Color.WHITE)
         yUnit = typedArray.getString(R.styleable.MyBarChartView_yUnit)
         mSegment = typedArray.getInt(
             R.styleable.MyBarChartView_mSegment,
-            ChartConstant.BAR_DEFAULT_SEGMENT
+           5
         )
         mDigit = typedArray.getInt(
             R.styleable.MyBarChartView_mDigit,
-            ChartConstant.BAR_DEFAULT_DIGIT
+            0
         )
-        mBarColor = typedArray.getColor(R.styleable.MyBarChartView_barColor, Color.BLACK)
+     //   mBarColor = typedArray.getColor(R.styleable.MyBarChartView_barColor, Color.BLACK)
         isAnim = typedArray.getBoolean(
             R.styleable.MyBarChartView_isAnim,
-            ChartConstant.BAR_DEFAULT_ISANIM
+           true
         )
         animTime = typedArray.getInt(
             R.styleable.MyBarChartView_animTime,
-            ChartConstant.BAR_DEFAULT_ANIMTIME
+            3000
         )
         isShowGridLine = typedArray.getBoolean(
             R.styleable.MyBarChartView_isShowGridLine,
@@ -102,7 +102,7 @@ class MyHorizontalBarChartView(context: Context?, attrs: AttributeSet?) : View(c
                 typedArray.getBoolean(
                     R.styleable.MyBarChartView_isShowTopNum,
                     ChartConstant.BAR_DEFAULT_ISSHOWTOPNUM
-                )
+                )*/
 
         if (yUnit == null) {
             yUnit = ""
