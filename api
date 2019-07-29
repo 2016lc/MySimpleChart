@@ -1,0 +1,44 @@
+柱状图、直线图共有属性
+名称                     作用                   值类型                默认                  对应方法
+isShowUnit          是否显示y轴单位            Boolean               FALSE
+yUnit                  y轴单位                  String                ""               setYunit(yunit:String)
+xyLineColor          xy、网格线颜色            color(int)        R.color.xy_color
+textColor              字体颜色                color(int)        R.color.text_color
+textSize               字体大小                dimension              10dp
+isAnim               是否需要动画               boolean               true               setIsAnim(isAnim: Boolean)
+isShowGridLine       是否需要网格线             boolean                false
+animTime               动画时间                integer(毫秒)           3000
+xSegment           若刚好一屏，x轴分为几段       integer                  6
+explainWindowWidth    解释文本框宽度             dimension             120dp              setexplainWindowWidth(eWidth: Float)
+explainWindowBgColor  解释文本框背景颜色           color           R.color.xy_color
+explainWindowTextSize  解释文本框字体大小         dimension              12dp
+mDigit                  数字小数位数              integer                0                 setmDigit(digit:Int)
+刷新方法：notifyDataSet()  使用对应方法重新设置了某些属性过后调用(在初始化build之前不需要调用此方法)
+
+柱状图属性
+barColor               柱子颜色                  color(int)                               setBarColor(color: Int)
+barWidth               柱子宽度                  dimension             8dp
+barMargin       如果是双列，两个柱子之间的间距     dimension             8dp                setBarMargin(barMargin: Float)
+barIsShowTopNum      是否显示顶端数字               boolean             true               setIsShowTopNuM(isShowTopNum: Boolean)
+barIsDouble            是否显示双列               boolean               false              setIsDouble(isDouble: Boolean)
+必须因素：barchart.setData(List<BarChartData>).build()
+
+折线图属性
+lineWidth              线条宽度                     dimension           5f                 setLineWidth(lineWidth:Float)
+circleWidth            结点圆圆宽度                 dimension           4dp                 setCircleWidth(circleWidth:Float)
+iskinkedLine           是否是曲线                   boolean               true              setIskinkedLine(iskinkedLine:Boolean)
+isShowCircle           是否显示结点圆               boolean               true              setIsShowCircle(isShowCircle:Boolean)
+必须因素：linechart.setColor(List<Int>).setData(MutableList<MutableList<LineChartData>>, 201f).setName(List<String>).build()
+------------------------------------------------------------------------------------------------------------------------------------------
+扇形图属性
+dataSize               数据字体大小                  dimension            20f                        setDataSize(dataSize: Float)
+dataColor              数据字体颜色                   color                Color.WHITE               setDataColor(dataColor: Int)
+unitSize               单位字体大小                   dimension            20f                        setUnitSize(unitSize: Float)
+unitColor              单位字体颜色                   color                Color.WHITE                setUnitColor(unitColor: Int)
+layoutType             布局样式[普通样式和指向说明]     string       defaults 普通样式  pointingInstructions 指向说明           setLayoutType(layoutType: String)
+animtime               动画时间                      integer                3000                       setAnimTime(animTime:Int)
+pointingColor          指向说明样式线条颜色             color            Color.GRAY                         setPointingColor(pointingColor:Int)
+digit                  数据小数位数                   integer              2                            setDigit(digit:Int)
+isHollow               是否空心                       boolean             false                        setIsHollow(isHollow:Boolean)
+isanim              是否需要动画                    boolean               true                      setIsAnim(isAnim:Boolean)
+必须因素： piechart.setData(List<PieChartData>).build()

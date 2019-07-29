@@ -4,6 +4,7 @@
     <!--common-->
     <declare-styleable name="MyCommonView">
         <attr name="isShowUnit" format="boolean"/>
+        <attr name="yUnit" format="string"/>
         <attr name="xyLineColor" format="color"/>
         <attr name="textColor" format="color"/>
         <attr name="textSize" format="dimension"/>
@@ -11,20 +12,27 @@
         <attr name="isShowGridLine" format="boolean"/>
         <attr name="animTime" format="integer"/>
         <attr name="xSegment" format="integer"/>
+        <attr name="explainWindowWidth" format="dimension"/>
+        <attr name="explainWindowBgColor" format="color"/>
+        <attr name="explainWindowTextSize" format="dimension"/>
+        <attr name="mDigit" format="integer"/>
     </declare-styleable>
-
 
     <!--扇形图-->
     <declare-styleable name="MyPieChartView">
-        <attr name="dataSize"/>
-        <attr name="dataColor"/>
-        <attr name="numSize"/>
-        <attr name="numColor"/>
-        <attr name="layoutType"/>
-        <attr name="animTime"/>
-        <attr name="pointingColor"/>
-        <attr name="digit"/>
-        <attr name="isHollow"/>
+        <attr name="dataSize" format="dimension"/>
+        <attr name="dataColor" format="color"/>
+        <attr name="unitSize" format="dimension"/>
+        <attr name="unitColor" format="color"/>
+        <attr name="layoutType" >
+            <enum name="defaults" value="1"/>
+            <enum name="pointingInstructions" value="2"/>
+        </attr>
+        <attr name="animtime" format="integer"/>
+        <attr name="pointingColor" format="color"/>
+        <attr name="digit" format="integer"/>
+        <attr name="isHollow" format="boolean"/>
+        <attr name="isanim" format="boolean"/>
     </declare-styleable>
 
     <!--柱状图-->
@@ -34,14 +42,12 @@
         <attr name="barMargin" format="dimension"/>
         <attr name="barIsShowTopNum" format="boolean"/>
         <attr name="barIsDouble" format="boolean"/>
-
     </declare-styleable>
 
     <!--折线图-->
     <declare-styleable name="MyLineChartView">
         <attr name="lineWidth" format="dimension"/>
-        <attr name="lineColor" format="color"/>
-        <attr name="circleColor" format="color"/>
+        <attr name="circleWidth" format="dimension"/>
         <attr name="iskinkedLine" format="boolean"/>
         <attr name="isShowCircle" format="boolean"/>
     </declare-styleable>

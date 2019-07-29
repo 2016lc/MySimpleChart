@@ -67,11 +67,11 @@ abstract class MyCommonView(context: Context?, attrs: AttributeSet?) : View(cont
     /** 画三角形的path */
     private val path = Path()
     /** 解释文本框的path */
-    private val explainPath = Path()
+    val explainPath = Path()
     /** 解释文本框的RectF */
-    private val explainRect = RectF()
+    val explainRect = RectF()
     /** 解释文本框的小三角 */
-    private var triangleLength = 10f
+    var triangleLength = 10f
     /** 初始化y轴分为几段 */
     open var mSegment: Int = ChartConstant.COMMON_DEFAULT_SEGMENT
     /** 是否显示y轴单位 */
@@ -107,22 +107,30 @@ abstract class MyCommonView(context: Context?, attrs: AttributeSet?) : View(cont
     private var itemHeight = 0f
     /** 是否在滑动 */
     private var isScroll = false
-    /** x轴分为几段 */
+    /** 若刚好一屏，x轴分为几段 */
     private var xSegment = ChartConstant.COMMON_DEFAULT_XSEGMENT
     /** 点击的位置 */
-    private var selectedIndex = 1
+    var selectedIndex = 1
     /** 上次点击的位置 */
     private var lastSelectedIndex = -1
     /** 是否可以点击 */
-    private var isClick = true
+    var isClick = true
     /** 是否显示解释文本框 */
-    private var isShowExplainWindow = false
+    var isShowExplainWindow = false
+    /** 解释文本框宽度 */
+    var explainWindowWidth = 0f
+    /** 解释文本框背景颜色 */
+    var explainWindowBgColor = 0
+    /** 解释文本框自己大小 */
+    var explainWindowTextSize = 12f
 
     init {
         mLineWidth = Util.dip2px(context!!, 0.7f).toFloat()
         mMargin = Util.dip2px(context, 8f)
         mTextSize = Util.dip2px(context, 10f).toFloat()
         triangleLength = Util.dip2px(context, 7f).toFloat()
+        // explainWindowWidth = Util.dp2px(context,15f).toFloat()
+
         mAnimator = ValueAnimator()
 
         mScroller = Scroller(context)
@@ -146,11 +154,19 @@ abstract class MyCommonView(context: Context?, attrs: AttributeSet?) : View(cont
             ChartConstant.COMMON_DEFAULT_ISHOWUNIT
         )
 
+        yUnit = if (typedArray.getString(R.styleable.MyCommonView_yUnit) == null) {
+            ""
+        } else {
+            typedArray.getString(R.styleable.MyCommonView_yUnit)!!
+        }
+
         mLineColor =
             typedArray.getColor(R.styleable.MyCommonView_xyLineColor, ContextCompat.getColor(context, R.color.xy_color))
         mTextColor =
             typedArray.getColor(R.styleable.MyCommonView_textColor, ContextCompat.getColor(context, R.color.text_color))
-        mTextSize = typedArray.getDimension(R.styleable.MyCommonView_textColor, Util.dip2px(context, 10f).toFloat())
+
+        mTextSize = typedArray.getDimension(R.styleable.MyCommonView_textSize, Util.dip2px(context, 10f).toFloat())
+
         isAnim = typedArray.getBoolean(
             R.styleable.MyCommonView_isAnim,
             ChartConstant.COMMON_DEFAULT_ISANIM
@@ -163,7 +179,19 @@ abstract class MyCommonView(context: Context?, attrs: AttributeSet?) : View(cont
 
         xSegment = typedArray.getInt(R.styleable.MyCommonView_xSegment, ChartConstant.COMMON_DEFAULT_XSEGMENT)
 
+        explainWindowWidth =
+            typedArray.getDimension(R.styleable.MyCommonView_explainWindowWidth, Util.dp2px(context, 120f).toFloat())
+
+        explainWindowBgColor = typedArray.getColor(
+            R.styleable.MyCommonView_explainWindowBgColor,
+            ContextCompat.getColor(context, R.color.xy_color)
+        )
+
+        explainWindowTextSize =
+            typedArray.getDimension(R.styleable.MyCommonView_explainWindowTextSize, Util.dip2px(context, 12f).toFloat())
         //DeclarativeAttribute(typedArray)
+
+        mDigit = typedArray.getInt(R.styleable.MyCommonView_mDigit,ChartConstant.COMMON_DEFAULT_DIGIT)
 
         typedArray.recycle()
     }
@@ -178,13 +206,12 @@ abstract class MyCommonView(context: Context?, attrs: AttributeSet?) : View(cont
         mPaint_grid_line = Paint()
         mPaint_grid_line!!.isDither = true
         mPaint_grid_line!!.strokeWidth = mLineWidth
-        mPaint_grid_line!!.color = mLineColor
         mPaint_grid_line!!.style = Paint.Style.FILL
 
         mPaint_text = TextPaint()
         // mPaint_text!!.color = resources.getColor(R.color.text_color)
         mPaint_text!!.isAntiAlias = true
-        mPaint_text!!.textSize = mTextSize
+
         // mPaint_text!!.textAlign = Paint.Align.RIGHT
 
     }
@@ -198,8 +225,12 @@ abstract class MyCommonView(context: Context?, attrs: AttributeSet?) : View(cont
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
+
         mPaint_text!!.textAlign = Paint.Align.RIGHT
-        mPaint_text!!.color = resources.getColor(R.color.text_color)
+        mPaint_text!!.color = mTextColor
+        mPaint_grid_line!!.color = mLineColor
+        mPaint_text!!.textSize = mTextSize
+
         val realWidth =
             mWidth - mPaint_text!!.measureText(mMaxValue.toString()) - 3 * mMargin - Util.dip2px(context, 5f)
         //x轴数据间距
@@ -209,7 +240,7 @@ abstract class MyCommonView(context: Context?, attrs: AttributeSet?) : View(cont
         //y轴开始的坐标
         lineStartY = (mMargin + Util.dip2px(context, 15f)).toFloat()
         //需要绘制的所有长度
-        mCanvasWidth = mDataMargin * maxNumSize + lineStartX + mMargin + Util.dip2px(context, 5f)+mLineWidth
+        mCanvasWidth = mDataMargin * maxNumSize + lineStartX + mMargin + Util.dip2px(context, 5f) + mLineWidth
         if (mCanvasWidth < realWidth) {
             mCanvasWidth = realWidth
             mDataMargin = realWidth / maxNumSize
@@ -245,108 +276,9 @@ abstract class MyCommonView(context: Context?, attrs: AttributeSet?) : View(cont
     /**
      * 画点击说明文
      * */
-    private fun drawExplainWindow(canvas: Canvas) {
+    open fun drawExplainWindow(canvas: Canvas) {}
 
-        mPaint_text!!.textAlign = Paint.Align.LEFT
-        if (getColor() != 0) {
-            mPaint_text!!.color = getColor()
-        }
-        if (isClick && isShowExplainWindow) {
-            var msg = ""
-            var msgTwo = ""
-            var left = 0f
-            var right = 0f
-            var bottom = 0f
-            if (getBarData() != null) {
-                msg =
-                    "${getBarData()?.get(selectedIndex - 1)!!.name}：${getBarData()?.get(selectedIndex - 1)!!.value}"
-                bottom = mMargin + textHeight + Util.dip2px(context, 10f)
-                if (isDouble()) {
-                    msgTwo =
-                        "${getBarData()?.get(selectedIndex - 1)!!.name}：${getBarData()?.get(selectedIndex - 1)!!.twoValue}"
-                    bottom = mMargin + textHeight * 2 + Util.dip2px(context, 12f)
-                }
-
-                left = lineStartX + mDataMargin * selectedIndex - max(
-                    mPaint_text!!.measureText(msg),
-                    mPaint_text!!.measureText(msgTwo)
-                ) / 2 - Util.dip2px(
-                    context,
-                    8f
-                )
-
-                right = lineStartX + mDataMargin * selectedIndex + max(
-                    mPaint_text!!.measureText(msg),
-                    mPaint_text!!.measureText(msgTwo)
-                ) / 2 + Util.dip2px(
-                    context,
-                    8f
-                )
-
-
-            } else {
-
-            }
-
-            explainRect.set(
-                left,
-                mMargin.toFloat(),
-                right,
-                bottom
-            )
-
-            explainPath.reset()
-            explainPath.addRoundRect(explainRect, 10f, 10f, Path.Direction.CCW)
-
-            explainPath.moveTo(lineStartX + mDataMargin * selectedIndex, bottom)
-            explainPath.rLineTo(-triangleLength / 2, 0f)
-            explainPath.rLineTo(triangleLength / 2, (sqrt(3.0) * triangleLength / 2).toFloat())
-            explainPath.rLineTo(triangleLength / 2, (-sqrt(3.0) * triangleLength / 2).toFloat())
-            explainPath.close()
-            mPaint_grid_line!!.color = resources.getColor(R.color.explain_bg)
-            //mPaint_grid_line!!.setShadowLayer(10f, 0f, 0f, 0x33000000)
-
-            canvas.drawPath(explainPath, mPaint_grid_line!!)
-
-            //float startX, float startY, float stopX, float stopY
-            //mPaint_grid_line!!.color = resources.getColor(R.color.text_color)
-            canvas.drawLine(
-                lineStartX + mDataMargin * selectedIndex,
-                mHeight - 2 * mMargin - textHeight,
-                lineStartX + mDataMargin * selectedIndex,
-                bottom,
-                mPaint_grid_line!!
-            )
-
-
-            if (getBarData() != null) {
-                canvas.drawText(
-                    msg,
-                    lineStartX + mDataMargin * selectedIndex - max(
-                        mPaint_text!!.measureText(msg),
-                        mPaint_text!!.measureText(msgTwo)
-                    ) / 2,
-                    mMargin + textHeight + Util.dip2px(context, 3f),
-                    mPaint_text!!
-                )
-                if (isDouble()) {
-                    canvas.drawText(
-                        msgTwo,
-                        lineStartX + mDataMargin * selectedIndex - max(
-                            mPaint_text!!.measureText(msg),
-                            mPaint_text!!.measureText(msgTwo)
-                        ) / 2,
-                        mMargin + textHeight * 2 + Util.dip2px(context, 1f),
-                        mPaint_text!!
-                    )
-                }
-            } else {
-
-            }
-        }
-    }
-
-    open fun getBarData(): MutableList<BarChartData>? {
+    /*open fun getBarData(): MutableList<BarChartData>? {
         return null
     }
 
@@ -356,7 +288,7 @@ abstract class MyCommonView(context: Context?, attrs: AttributeSet?) : View(cont
 
     open fun getColor(): Int {
         return 0
-    }
+    }*/
 
 
     /**
@@ -591,6 +523,11 @@ abstract class MyCommonView(context: Context?, attrs: AttributeSet?) : View(cont
                         selectedIndex = 1
                     }
 
+                    if (selectedIndex == maxNumSize) {
+                        selectedIndex -= 1
+                    }
+
+
                     isShowExplainWindow = selectedIndex != lastSelectedIndex
 
                     lastSelectedIndex = if (isClick && isShowExplainWindow) {
@@ -741,7 +678,28 @@ abstract class MyCommonView(context: Context?, attrs: AttributeSet?) : View(cont
      * */
     fun setIsAnim(isAnim: Boolean) {
         this.isAnim = isAnim
+        //invalidate()
+    }
+
+    fun setYunit(yunit: String) {
+        yUnit = yunit
+    }
+
+
+    /**
+     * 刷新
+     */
+    fun notifyDataSet() {
         invalidate()
+    }
+
+
+    fun setexplainWindowWidth(eWidth: Float) {
+        explainWindowWidth = eWidth
+    }
+
+    fun setmDigit(digit:Int){
+        mDigit = digit
     }
 
 }

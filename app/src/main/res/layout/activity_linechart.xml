@@ -9,15 +9,38 @@
             android:id="@+id/linechart"
             android:layout_width="match_parent"
             android:layout_height="400dp"
-            app:isShowGridLine="true"
-            app:isShowCircle="false"
+            app:animTime="3000"
+            app:isShowCircle="true"
+            app:isShowUnit="true"
+            app:textColor="@color/color_home_top"
+            app:xyLineColor="@color/colorAccent"
             app:isAnim="true"
+            app:isShowGridLine="true"
+            app:explainWindowWidth="130dp"
             />
 
     <Button
-            android:id="@+id/btn_isAnim"
+            android:id="@+id/btn_linewidth"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="是否需要动画"/>
+            android:text="设置线条宽度"/>
+
+    <Button
+            android:id="@+id/btn_circlewidth"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="结点圆宽度"/>
+
+    <Button
+            android:id="@+id/btn_iskinkedLine"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="是否是曲线"/>
+
+    <Button
+            android:id="@+id/btn_isShowCircle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="是否显示结点圆"/>
 
 </LinearLayout>

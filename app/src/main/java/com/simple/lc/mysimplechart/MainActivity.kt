@@ -22,12 +22,12 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
             }
         }*/
-        btn_horibarchart.setOnClickListener {
+        /*btn_horibarchart.setOnClickListener {
             run {
                 val intent = Intent(this, HoriBarChartActivity::class.java)
                 startActivity(intent)
             }
-        }
+        }*/
         btn_piechart.setOnClickListener {
             run {
                 val intent = Intent(this, PieChartActivity::class.java)

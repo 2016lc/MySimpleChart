@@ -16,8 +16,8 @@ import java.util.ArrayList
  * Description:扇形图
  */
 class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, attrs) {
-
-    private var mPieChartPaint: Paint? = null//画笔
+    //画笔
+    private var mPieChartPaint: Paint? = null
     //圆心位置
     private var centerPosition: Point? = null
     //半径
@@ -61,6 +61,8 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
     private var mDigit: Int = 2
     //是否空心
     private var isHollow: Boolean? = null
+    //是否需要动画
+    private var isAnim = true
 
     var minWidth: Int? = 0
 
@@ -82,13 +84,14 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
         )
 
         mDataSize = typedArray.getDimension(R.styleable.MyPieChartView_dataSize, ChartConstant.PIE_DEFAULT_DATA_SIZE)
+
         mDataColor = typedArray.getColor(R.styleable.MyPieChartView_dataColor, Color.WHITE)
 
-        mUnitColor = typedArray.getColor(R.styleable.MyPieChartView_numColor, Color.WHITE)
-        mUnitSize = typedArray.getFloat(R.styleable.MyPieChartView_numSize, ChartConstant.PIE_DEFAULT_UNIT_SIZE)
+        mUnitColor = typedArray.getColor(R.styleable.MyPieChartView_unitColor, Color.WHITE)
+        mUnitSize = typedArray.getFloat(R.styleable.MyPieChartView_unitSize, ChartConstant.PIE_DEFAULT_UNIT_SIZE)
 
 
-        mAnimTime = typedArray.getInt(R.styleable.MyPieChartView_animTime, ChartConstant.PIE_DEFAULT_ANIM_TIME)
+        mAnimTime = typedArray.getInt(R.styleable.MyPieChartView_animtime, ChartConstant.PIE_DEFAULT_ANIM_TIME)
 
         mDigit = typedArray.getInt(R.styleable.MyPieChartView_digit, ChartConstant.PIE_DEFAULT_DIGIT)
 
@@ -96,9 +99,18 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
 
         mPointingColor = typedArray.getColor(R.styleable.MyPieChartView_pointingColor, Color.GRAY)
 
+        isAnim = typedArray.getBoolean(R.styleable.MyPieChartView_isanim, true)
+
         mLayoutType = typedArray.getString(R.styleable.MyPieChartView_layoutType)
+
         if (mLayoutType == null) {
             mLayoutType = "default"
+        }
+
+        mLayoutType = when (mLayoutType) {
+            "1" -> "default"
+            "2" -> "pointingInstructions"
+            else -> "default"
         }
 
         typedArray.recycle()
@@ -109,7 +121,7 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
         mPieChartPaint!!.isAntiAlias = true//是否开启抗锯齿
         mPieChartPaint!!.isDither = true//防抖动
         mPieChartPaint!!.style =
-                Paint.Style.FILL_AND_STROKE//画笔样式  //STROKE 只绘制图形轮廓（描边） FILL 只绘制图形内容 FILL_AND_STROKE 既绘制轮廓也绘制内容
+            Paint.Style.FILL_AND_STROKE//画笔样式  //STROKE 只绘制图形轮廓（描边） FILL 只绘制图形内容 FILL_AND_STROKE 既绘制轮廓也绘制内容
         // mPieChartPaint!!.strokeWidth = mPieChartWidth!!//画笔宽度
         /*mPieChartPaint!!.strokeCap =
                 Paint.Cap.ROUND*///笔刷样式 //当画笔样式为STROKE或FILL_OR_STROKE时，设置笔刷的图形样式，如圆形样式Cap.ROUND,或方形样式Cap.SQUARE
@@ -146,7 +158,7 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
         centerPosition!!.y = h / 2
         //半径
         minWidth =
-                Math.min(w - paddingLeft - paddingRight, h - paddingBottom - paddingTop)
+            Math.min(w - paddingLeft - paddingRight, h - paddingBottom - paddingTop)
         raduis = if (mLayoutType == "pointingInstructions") {
             (minWidth!! / 2).toFloat() - 75
         } else {
@@ -154,10 +166,7 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
         }
         dataRaduis = raduis!! * 3 / 4
         //矩形坐标
-        mRectF!!.left = centerPosition!!.x - raduis!!
-        mRectF!!.top = centerPosition!!.y - raduis!!
-        mRectF!!.right = centerPosition!!.x + raduis!!
-        mRectF!!.bottom = centerPosition!!.y + raduis!!
+
 
     }
 
@@ -178,6 +187,12 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
             mRectF!!.top = centerPosition!!.y - raduis!! * 2 / 3
             mRectF!!.right = centerPosition!!.x + raduis!! * 2 / 3
             mRectF!!.bottom = centerPosition!!.y + raduis!! * 2 / 3
+        } else {
+            mPieChartPaint!!.strokeWidth = 0f
+            mRectF!!.left = centerPosition!!.x - raduis!!
+            mRectF!!.top = centerPosition!!.y - raduis!!
+            mRectF!!.right = centerPosition!!.x + raduis!!
+            mRectF!!.bottom = centerPosition!!.y + raduis!!
         }
         for (i in 0 until mData!!.size) {
             mPieChartPaint!!.color = mData!![i].color!!
@@ -289,9 +304,16 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
             }
         }
         mData!!.addAll(data)
-        startAnim(mAnimTime!!)
-        invalidate()
         return this
+    }
+
+    fun build() {
+        if (isAnim) {
+            startAnim(mAnimTime!!)
+        } else {
+            mPercent = 1f
+            invalidate()
+        }
     }
 
     /**
@@ -299,7 +321,72 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
      * */
     fun setType(type: PieChartType): MyPieChartView {
         this.mType = type
+        return this
+    }
+
+    /**
+     * 刷新
+     * */
+    fun notifyDataSet() {
         invalidate()
+    }
+
+
+    fun setDataSize(dataSize: Float): MyPieChartView {
+        mDataSize = dataSize
+        mDataPaint!!.textSize = mDataSize!!
+        return this
+    }
+
+    fun setDataColor(dataColor: Int): MyPieChartView {
+        mDataColor = dataColor
+        mDataPaint!!.color = mDataColor!!
+        return this
+    }
+
+    fun setUnitSize(unitSize: Float): MyPieChartView {
+        mUnitSize = unitSize
+        mUnitPaint!!.textSize = mUnitSize!!
+        return this
+    }
+
+    fun setUnitColor(unitColor: Int): MyPieChartView {
+        mUnitColor = unitColor
+        mUnitPaint!!.color = mUnitColor!!
+        return this
+    }
+
+    fun setLayoutType(layoutType: String): MyPieChartView {
+        mLayoutType = layoutType
+        if (mLayoutType == "defaults") {
+            mLayoutType = "default"
+        }
+        return this
+    }
+
+    fun setAnimTime(animTime: Int): MyPieChartView {
+        mAnimTime = animTime
+        return this
+    }
+
+    fun setPointingColor(pointingColor: Int): MyPieChartView {
+        mPointingColor = pointingColor
+        mPointingPaint!!.color = mPointingColor!!
+        return this
+    }
+
+    fun setDigit(digit: Int): MyPieChartView {
+        mDigit = digit
+        return this
+    }
+
+    fun setIsHollow(isHollow: Boolean): MyPieChartView {
+        this.isHollow = isHollow
+        return this
+    }
+
+    fun setIsAnim(isAnim: Boolean): MyPieChartView {
+        this.isAnim = isAnim
         return this
     }
 

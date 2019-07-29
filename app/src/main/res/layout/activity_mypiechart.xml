@@ -1,19 +1,79 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              xmlns:app="http://schemas.android.com/apk/res-auto"
-              android:layout_width="match_parent" android:layout_height="match_parent"
-              android:gravity="center"
->
-    <!-- app:layoutType="pointingInstructions"-->
-    <com.simple.lc.mylibrary.view.MyPieChartView
-            android:id="@+id/piechart"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
-            app:dataColor="#333333"
-            app:numColor="#333333"
-            app:digit="0"
-            app:isHollow="true"
 
-    />
+<ScrollView
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        xmlns:app="http://schemas.android.com/apk/res-auto">
 
-</LinearLayout>
+    <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:background="#000"
+            >
+
+        <com.simple.lc.mylibrary.view.MyPieChartView
+                android:id="@+id/piechart"
+                android:layout_width="match_parent"
+                android:layout_height="300dp"
+                android:padding="20dp"
+                app:isanim="false"
+                />
+
+        <Button
+                android:id="@+id/btn_datasize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="数据字体大小"/>
+
+        <Button
+                android:id="@+id/btn_datacolor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="数据字体颜色"/>
+
+        <Button
+                android:id="@+id/btn_unitsize"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="单位字体大小"/>
+
+        <Button
+                android:id="@+id/btn_unitcolor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="单位字体颜色"/>
+
+        <Button
+                android:id="@+id/btn_layouttype"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="布局样式"/>
+
+        <Button
+                android:id="@+id/btn_animtime"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="动画时间"/>
+
+        <Button
+                android:id="@+id/btn_pointingcolor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="指向说明样式线条颜色"/>
+
+        <Button
+                android:id="@+id/btn_digit"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="数据小数位数"/>
+
+        <Button
+                android:id="@+id/btn_ishollow"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="是否空心"/>
+
+    </LinearLayout>
+</ScrollView>

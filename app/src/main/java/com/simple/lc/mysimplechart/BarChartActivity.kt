@@ -15,6 +15,8 @@ import java.util.*
 class BarChartActivity : Activity() {
 
     private var isDouble = false
+    private var isShowTopNuM = false
+    private var margin = 20f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -24,68 +26,27 @@ class BarChartActivity : Activity() {
         btn_isdouble.setOnClickListener {
             barchart.setIsDouble(!isDouble)
             isDouble = !isDouble
+            barchart.notifyDataSet()
         }
 
         btn_color.setOnClickListener {
             barchart.setBarColor(Color.parseColor("#${getRandColor()}"))
+            barchart.notifyDataSet()
+        }
+
+        btn_isshowTopNum.setOnClickListener {
+            barchart.setIsShowTopNuM(isShowTopNuM)
+            isShowTopNuM = !isShowTopNuM
+            barchart.notifyDataSet()
+        }
+
+        btn_barMargin.setOnClickListener {
+            barchart.setBarMargin(margin)
+            margin += 5
+            barchart.notifyDataSet()
         }
 
         val mList: List<BarChartData> = listOf(
-            /*BarChartData("哈哈", 12.35f),
-            BarChartData("嘻嘻", 3.36f),
-            BarChartData("呵呵", 190.96f),
-            BarChartData("啧啧", 7f),
-            BarChartData("弟弟", 100f),
-            BarChartData("哥哥", 65f),
-            BarChartData("哈哈", 12f),
-            BarChartData("嘻嘻", 3f),
-            BarChartData("呵呵", 190f),
-            BarChartData("啧啧", 7f),
-            BarChartData("弟弟", 100f),
-            BarChartData("哥哥", 65f),
-            BarChartData("哈哈", 12f),
-            BarChartData("嘻嘻", 3f),
-            BarChartData("呵呵", 190f),
-            BarChartData("啧啧", 7f),
-            BarChartData("弟弟", 100f),
-            BarChartData("哥哥", 65f),
-            BarChartData("哈哈", 12f),
-            BarChartData("嘻嘻", 3f),
-            BarChartData("呵呵", 190f),
-            BarChartData("啧啧", 7f),
-            BarChartData("弟弟", 100f),
-            BarChartData("哥哥", 65f),
-            BarChartData("哈哈", 12f),
-            BarChartData("嘻嘻", 3f),
-            BarChartData("呵呵", 190f),
-            BarChartData("啧啧", 7f),
-            BarChartData("弟弟", 100f),
-            BarChartData("哥哥", 65f),
-            BarChartData("哈哈", 12f),
-            BarChartData("嘻嘻", 3f),
-            BarChartData("呵呵", 190f),
-            BarChartData("啧啧", 7f),
-            BarChartData("弟弟", 100f),
-            BarChartData("哥哥", 65f),
-            BarChartData("哈哈", 12f),
-            BarChartData("嘻嘻", 3f),
-            BarChartData("呵呵", 190f),
-            BarChartData("啧啧", 7f),
-            BarChartData("弟弟", 100f),
-            BarChartData("哥哥", 65f),
-            BarChartData("哈哈", 12f),
-            BarChartData("嘻嘻", 3f),
-            BarChartData("呵呵", 190f),
-            BarChartData("啧啧", 7f),
-            BarChartData("弟弟", 100f),
-            BarChartData("哥哥", 65f),
-            BarChartData("哈哈", 12f),
-            BarChartData("呵呵", 190f),
-            BarChartData("啧啧", 7f),
-            BarChartData("弟弟", 100f),
-            BarChartData("哥哥", 65f),
-            BarChartData("妹", 201f),*/
-
             BarChartData("hah", 15.36f, 9f),
             BarChartData("hdsfadah", 88.5f, 19f),
             BarChartData("hafaadfh", 18.36f, 99f),
@@ -105,9 +66,10 @@ class BarChartActivity : Activity() {
             BarChartData("hah", 49.36f, 29f),
             BarChartData("afda", 58.36f, 19f),
             BarChartData("haah", 94.36f, 19f),
-            BarChartData("adf", 22.36f, 99f)
+            BarChartData("嘻嘻嘻嘻嘻嘻嘻嘻嘻", 22.36f, 99f)
         )
-        barchart.setData(mList)
+
+        barchart.setData(mList).build()
     }
 
     /** * 获取十六进制的颜色代码.例如 "#5A6677" * 分别取R、G、B的随机值，然后加起来即可 * * @return String  */
@@ -122,7 +84,7 @@ class BarChartActivity : Activity() {
 
         R = if (R.length == 1) "0$R" else R
         G = if (G.length == 1) "0$G" else G
-        B = if (B.length== 1) "0$B" else B
+        B = if (B.length == 1) "0$B" else B
 
         return R + G + B
     }

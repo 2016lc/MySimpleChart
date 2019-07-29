@@ -10,6 +10,7 @@ import com.simple.lc.mylibrary.*
 import java.util.*
 import kotlin.math.ceil
 import kotlin.math.max
+import kotlin.math.sqrt
 
 /**
  * Author:LC
@@ -34,7 +35,6 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : MyCommonView(con
     private var isDoubleBar: Boolean = ChartConstant.BAR_DEFAULT_ISDOUBLE
     /** 如果是双列，两个柱子之间的间距 */
     private var mBarMargin: Float = ChartConstant.BAR_DEFAULT_BARMARGIN
-
 
     init {
         val typedArray = context!!.obtainStyledAttributes(
@@ -61,7 +61,6 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : MyCommonView(con
         mPaint_bar!!.strokeWidth = mBarWidth
         mPaint_bar!!.color = mBarColor
         mPaint_bar!!.style = Paint.Style.FILL
-
         mRectF = RectF()
     }
 
@@ -102,7 +101,7 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : MyCommonView(con
                 //画字
                 canvas.drawText(
                     mData[i].name!!,
-                    lineStartX + mDataMargin * (i + 1) - mBarMargin / 2 - mBarWidth  + mPaint_text!!.measureText(
+                    lineStartX + mDataMargin * (i + 1) - mBarMargin / 2 - mBarWidth + mPaint_text!!.measureText(
                         mData[i].name!!
                     ) / 2,
                     mHeight.toFloat() - mMargin,
@@ -184,34 +183,161 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : MyCommonView(con
         }
     }
 
+    /**
+     * 画点击说明文
+     * */
+    override fun drawExplainWindow(canvas: Canvas) {
 
-    override fun getBarData(): MutableList<BarChartData>? {
-        return mData
-    }
+        mPaint_text!!.textAlign = Paint.Align.LEFT
+        mPaint_text!!.color = mBarColor
+        mPaint_text!!.textSize = explainWindowTextSize
+        mPaint_grid_line!!.color = explainWindowBgColor
 
-    override fun isDouble(): Boolean {
-        return isDoubleBar
+        if (isClick && isShowExplainWindow) {
+            var msg = ""
+            var msgTwo = ""
+            var left = 0f
+            var right = 0f
+            var bottom = 0f
+
+            msg =
+                "${mData[selectedIndex - 1].name}：${Util.roundByScale(mData[selectedIndex - 1].value!!.toDouble(), mDigit)}"
+
+            bottom = mMargin + textHeight + Util.dip2px(context, 10f)
+
+            if (isDoubleBar) {
+                msgTwo =
+                    "${mData[selectedIndex - 1].name}：${Util.roundByScale(mData[selectedIndex - 1].twoValue.toDouble(), mDigit)}"
+
+                bottom = mMargin + textHeight * 2 + Util.dip2px(context, 12f)
+            }
+
+            if (mDataMargin < (explainWindowWidth + Util.dip2px(context, 16f)) / 2) {
+                when (selectedIndex) {
+                    1 -> {
+
+                        left = lineStartX + mDataMargin - explainWindowWidth / 2 - Util.dip2px(
+                            context,
+                            8f
+                        ) + (explainWindowWidth + Util.dip2px(context, 16f)) / 2 - mDataMargin
+
+                        right = lineStartX + mDataMargin + explainWindowWidth / 2 + Util.dip2px(
+                            context,
+                            8f
+                        ) + (explainWindowWidth + Util.dip2px(context, 16f)) / 2 - mDataMargin
+
+                    }
+                    maxNumSize-1 -> {
+                        left = lineStartX + mDataMargin * selectedIndex - explainWindowWidth / 2 - Util.dip2px(
+                            context,
+                            8f
+                        ) + mDataMargin - (explainWindowWidth + Util.dip2px(context, 16f)) / 2
+
+                        right = lineStartX + mDataMargin * selectedIndex + explainWindowWidth / 2 + Util.dip2px(
+                            context,
+                            8f
+                        ) + mDataMargin - (explainWindowWidth + Util.dip2px(context, 16f)) / 2
+                    }
+                    else -> {
+                        left =
+                            lineStartX + mDataMargin * selectedIndex - explainWindowWidth / 2 - Util.dip2px(context, 8f)
+
+                        right =
+                            lineStartX + mDataMargin * selectedIndex + explainWindowWidth / 2 + Util.dip2px(context, 8f)
+                    }
+                }
+            } else {
+                left = lineStartX + mDataMargin * selectedIndex - explainWindowWidth / 2 - Util.dip2px(context, 8f)
+
+                right = lineStartX + mDataMargin * selectedIndex + explainWindowWidth / 2 + Util.dip2px(context, 8f)
+            }
+
+
+            /*left = lineStartX + mDataMargin * selectedIndex - explainWindowWidth / 2 - Util.dip2px(
+                context,
+                8f
+            )
+
+            right = lineStartX + mDataMargin * selectedIndex + explainWindowWidth / 2 + Util.dip2px(
+                context,
+                8f
+            )*/
+
+            explainRect.set(
+                left,
+                mMargin.toFloat(),
+                right,
+                bottom
+            )
+
+            explainPath.reset()
+            explainPath.addRoundRect(explainRect, 10f, 10f, Path.Direction.CCW)
+
+            explainPath.moveTo(lineStartX + mDataMargin * selectedIndex, bottom)
+            explainPath.rLineTo(-triangleLength / 2, 0f)
+            explainPath.rLineTo(triangleLength / 2, (sqrt(3.0) * triangleLength / 2).toFloat())
+            explainPath.rLineTo(triangleLength / 2, (-sqrt(3.0) * triangleLength / 2).toFloat())
+            explainPath.close()
+            // mPaint_grid_line!!.color = resources.getColor(R.color.explain_bg)
+            //mPaint_grid_line!!.setShadowLayer(10f, 0f, 0f, 0x33000000)
+
+            canvas.drawPath(explainPath, mPaint_grid_line!!)
+
+            //float startX, float startY, float stopX, float stopY
+            //mPaint_grid_line!!.color = resources.getColor(R.color.text_color)
+            canvas.drawLine(
+                lineStartX + mDataMargin * selectedIndex,
+                mHeight - 2 * mMargin - textHeight,
+                lineStartX + mDataMargin * selectedIndex,
+                bottom,
+                mPaint_grid_line!!
+            )
+
+            canvas.drawText(
+                msg,
+                left + Util.dip2px(
+                    context,
+                    8f
+                ),
+                mMargin + textHeight + Util.dip2px(context, 3f),
+                mPaint_text!!
+            )
+            if (isDoubleBar) {
+                canvas.drawText(
+                    msgTwo,
+                    left + Util.dip2px(
+                        context,
+                        8f
+                    ),
+                    mMargin + textHeight * 2 + Util.dip2px(context, 1f),
+                    mPaint_text!!
+                )
+            }
+        }
     }
 
     /**
      * 设置数据
      * */
-    fun setData(mData: List<BarChartData>) {
+    fun setData(mData: List<BarChartData>): MyBarChartView {
         if (this.mData.size > 0) {
             this.mData.clear()
         }
-
         this.mData.addAll(mData)
-
-        maxNumSize = this.mData.size
-
+        maxNumSize = this.mData.size + 1
         mMaxValue = ceil(max(mData[0].value!!, mData[0].twoValue).toDouble()).toInt()
         for (i in 0 until mData.size) {
             if (ceil(max(mData[i].value!!, mData[i].twoValue).toDouble()).toInt() > mMaxValue) {
                 mMaxValue = ceil(max(mData[i].value!!, mData[i].twoValue).toDouble()).toInt()
             }
         }
+        return this
+    }
 
+    /**
+     * 创建柱状图
+     */
+    fun build(): MyBarChartView {
         scrollTo(0, 0)
         // 停止滚动
         mFling?.stop()
@@ -222,6 +348,7 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : MyCommonView(con
             mPercent = 1F
             invalidate()
         }
+        return this
     }
 
 
@@ -230,7 +357,7 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : MyCommonView(con
      * */
     fun setIsDouble(isDouble: Boolean) {
         isDoubleBar = isDouble
-        invalidate()
+        //invalidate()
     }
 
     /**
@@ -239,11 +366,6 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : MyCommonView(con
     fun setBarColor(color: Int) {
         mBarColor = color
         mPaint_bar!!.color = mBarColor
-        invalidate()
-    }
-
-    override fun getColor(): Int {
-        return mBarColor
     }
 
     /**
@@ -251,7 +373,6 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : MyCommonView(con
      * */
     fun setIsShowTopNuM(isShowTopNum: Boolean) {
         this.isShowTopNum = isShowTopNum
-        invalidate()
     }
 
     /**
@@ -259,7 +380,7 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : MyCommonView(con
      * */
     fun setBarMargin(barMargin: Float) {
         if (!isDoubleBar) {
-            Log.e("CHART", "单列柱状图无法设置barMargin")
+            Log.e("MySimpleChart", "单列柱状图无法设置barMargin")
             return
         }
         mBarMargin = barMargin

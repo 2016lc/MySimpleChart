@@ -7,13 +7,11 @@ package com.simple.lc.mylibrary
  */
 class LineChartData {
 
-    var name: String? = null
     var value: Float? = null
-    var color: Int? = null
+    var xValue:String?=null
 
-    constructor(name: String?, value: Float?, color: Int?) {
-        this.name = name
+    constructor( value: Float?, xValue: String?) {
         this.value = value
-        this.color = color
+        this.xValue = xValue
     }
 }
