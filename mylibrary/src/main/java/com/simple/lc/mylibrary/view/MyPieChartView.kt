@@ -132,7 +132,7 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
         mDataPaint!!.isAntiAlias = true//是否抗锯齿
         mDataPaint!!.textSize = mDataSize!!//字体大小
         mDataPaint!!.color = mDataColor!!//字体颜色
-        mDataPaint!!.textAlign = Paint.Align.CENTER//从中间向两边绘制，不需要再次计算文字
+     //   mDataPaint!!.textAlign = Paint.Align.CENTER//从中间向两边绘制，不需要再次计算文字
 
 
         mUnitPaint = TextPaint()
@@ -140,7 +140,7 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
         mUnitPaint!!.isAntiAlias = true//是否抗锯齿
         mUnitPaint!!.textSize = mUnitSize!!//字体大小
         mUnitPaint!!.color = mUnitColor!!//字体颜色
-        mUnitPaint!!.textAlign = Paint.Align.CENTER//从中间向两边绘制，不需要再次计算文字
+     //   mUnitPaint!!.textAlign = Paint.Align.CENTER//从中间向两边绘制，不需要再次计算文字
 
         mPointingPaint = Paint()
         mPointingPaint!!.isAntiAlias = true//是否开启抗锯齿
@@ -211,6 +211,8 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
                 pointData(canvas, i)
             } else {
                 //画数据
+                mDataPaint!!.textAlign= Paint.Align.CENTER
+                mUnitPaint!!.textAlign= Paint.Align.CENTER
                 drawData(canvas, i, x, y)
             }
         }
@@ -227,10 +229,14 @@ class MyPieChartView(context: Context?, attrs: AttributeSet?) : View(context, at
         val yEdP = centerPosition!!.y - (raduis!! + 20) *
                 Math.cos(Math.toRadians((90 + mStartAngle!! - mSweepAngle!! / 2).toDouble())).toFloat()
         var xLast = 0f
-        xLast = if (mStartAngle!! - mSweepAngle!! / 2 >= 270 || mStartAngle!! - mSweepAngle!! / 2 <= 90) {
-            xEdP + 30
+        if (mStartAngle!! - mSweepAngle!! / 2 >= 270 || mStartAngle!! - mSweepAngle!! / 2 <= 90) {
+            xLast =  xEdP + 30
+            mDataPaint!!.textAlign= Paint.Align.LEFT
+            mUnitPaint!!.textAlign= Paint.Align.LEFT
         } else {
-            xEdP - 30
+            xLast =  xEdP - 30
+            mDataPaint!!.textAlign= Paint.Align.RIGHT
+            mUnitPaint!!.textAlign= Paint.Align.RIGHT
         }
         canvas.drawLine(xP, yP, xEdP, yEdP, mPointingPaint!!)
         canvas.drawLine(xEdP, yEdP, xLast, yEdP, mPointingPaint!!)
