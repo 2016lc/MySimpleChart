@@ -16,6 +16,7 @@
         <attr name="explainWindowBgColor" format="color"/>
         <attr name="explainWindowTextSize" format="dimension"/>
         <attr name="mDigit" format="integer"/>
+        <attr name="isClick" format="boolean"/>
     </declare-styleable>
 
     <!--扇形图-->

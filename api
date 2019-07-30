@@ -13,6 +13,7 @@ explainWindowWidth    解释文本框宽度             dimension             12
 explainWindowBgColor  解释文本框背景颜色           color           R.color.xy_color
 explainWindowTextSize  解释文本框字体大小         dimension              12dp
 mDigit                  数字小数位数              integer                0                 setmDigit(digit:Int)
+isClick                 是否可以点击               boolean               true
 刷新方法：notifyDataSet()  使用对应方法重新设置了某些属性过后调用(在初始化build之前不需要调用此方法)
 
 柱状图属性

@@ -191,7 +191,9 @@ abstract class MyCommonView(context: Context?, attrs: AttributeSet?) : View(cont
             typedArray.getDimension(R.styleable.MyCommonView_explainWindowTextSize, Util.dip2px(context, 12f).toFloat())
         //DeclarativeAttribute(typedArray)
 
-        mDigit = typedArray.getInt(R.styleable.MyCommonView_mDigit,ChartConstant.COMMON_DEFAULT_DIGIT)
+        mDigit = typedArray.getInt(R.styleable.MyCommonView_mDigit, ChartConstant.COMMON_DEFAULT_DIGIT)
+
+        isClick = typedArray.getBoolean(R.styleable.MyCommonView_isClick,true)
 
         typedArray.recycle()
     }
@@ -232,7 +234,10 @@ abstract class MyCommonView(context: Context?, attrs: AttributeSet?) : View(cont
         mPaint_text!!.textSize = mTextSize
 
         val realWidth =
-            mWidth - mPaint_text!!.measureText(mMaxValue.toString()) - 3 * mMargin - Util.dip2px(context, 5f)
+            mWidth - mPaint_text!!.measureText(mMaxValue.toString()) - 3 * mMargin - Util.dip2px(
+                context,
+                5f
+            ) - mPaint_text!!.measureText(yUnit)
         //x轴数据间距
         mDataMargin = realWidth / xSegment
         //x轴开始的坐标
@@ -240,7 +245,8 @@ abstract class MyCommonView(context: Context?, attrs: AttributeSet?) : View(cont
         //y轴开始的坐标
         lineStartY = (mMargin + Util.dip2px(context, 15f)).toFloat()
         //需要绘制的所有长度
-        mCanvasWidth = mDataMargin * maxNumSize + lineStartX + mMargin + Util.dip2px(context, 5f) + mLineWidth
+        mCanvasWidth = mDataMargin * maxNumSize + lineStartX + mMargin + Util.dip2px(context, 5f)
+
         if (mCanvasWidth < realWidth) {
             mCanvasWidth = realWidth
             mDataMargin = realWidth / maxNumSize
@@ -259,7 +265,7 @@ abstract class MyCommonView(context: Context?, attrs: AttributeSet?) : View(cont
         canvas.clipRect(
             lineStartX + mLineWidth + scrollX,
             0f,
-            mWidth - mMargin.toFloat() - Util.dip2px(context, 4f) + scrollX,
+            mWidth - mMargin.toFloat() - Util.dip2px(context, 4.5f) + scrollX,
             mHeight.toFloat()
         )
 
@@ -299,7 +305,7 @@ abstract class MyCommonView(context: Context?, attrs: AttributeSet?) : View(cont
             //y轴网格
             for (z in 0 until mSegment) {
                 canvas.drawLine(
-                    lineStartX + scrollX,
+                    lineStartX ,
                     lineStartY + itemHeight * z,
                     lineStartX + mCanvasWidth,
                     lineStartY + itemHeight * z,
@@ -516,7 +522,7 @@ abstract class MyCommonView(context: Context?, attrs: AttributeSet?) : View(cont
                 }
                 releaseVelocityTracker()
                 //点击显示详细说明
-                if (!isScroll) {
+                if (!isScroll || abs(velocityX) < minVelocity) {
 
                     selectedIndex = ((lastX - lineStartX + scrollX) / mDataMargin).roundToInt()
                     if (selectedIndex == 0) {
@@ -698,7 +704,7 @@ abstract class MyCommonView(context: Context?, attrs: AttributeSet?) : View(cont
         explainWindowWidth = eWidth
     }
 
-    fun setmDigit(digit:Int){
+    fun setmDigit(digit: Int) {
         mDigit = digit
     }
 

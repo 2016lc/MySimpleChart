@@ -252,17 +252,6 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : MyCommonView(con
                 right = lineStartX + mDataMargin * selectedIndex + explainWindowWidth / 2 + Util.dip2px(context, 8f)
             }
 
-
-            /*left = lineStartX + mDataMargin * selectedIndex - explainWindowWidth / 2 - Util.dip2px(
-                context,
-                8f
-            )
-
-            right = lineStartX + mDataMargin * selectedIndex + explainWindowWidth / 2 + Util.dip2px(
-                context,
-                8f
-            )*/
-
             explainRect.set(
                 left,
                 mMargin.toFloat(),
@@ -283,7 +272,6 @@ class MyBarChartView(context: Context?, attrs: AttributeSet?) : MyCommonView(con
 
             canvas.drawPath(explainPath, mPaint_grid_line!!)
 
-            //float startX, float startY, float stopX, float stopY
             //mPaint_grid_line!!.color = resources.getColor(R.color.text_color)
             canvas.drawLine(
                 lineStartX + mDataMargin * selectedIndex,

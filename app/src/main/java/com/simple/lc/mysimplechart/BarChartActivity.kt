@@ -66,7 +66,7 @@ class BarChartActivity : Activity() {
             BarChartData("hah", 49.36f, 29f),
             BarChartData("afda", 58.36f, 19f),
             BarChartData("haah", 94.36f, 19f),
-            BarChartData("嘻嘻嘻嘻嘻嘻嘻嘻嘻", 22.36f, 99f)
+            BarChartData("嘻嘻嘻嘻", 22.36f, 99f)
         )
 
         barchart.setData(mList).build()
