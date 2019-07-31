@@ -13,3 +13,5 @@ allprojects {
 ```
 implementation 'com.github.2016lc:MySimpleChart:2.0.0'
 ```
+简书地址：
+https://www.jianshu.com/p/7f896e3c2a6a
